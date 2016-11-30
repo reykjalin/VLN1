@@ -25,6 +25,7 @@ void PersonPresentation::startPresentation() {
 
 void PersonPresentation::printMenu() {
     qout << "What do you want to do?" << endl;
-    qout << "[1] Do stuff" << endl;
+    qout << "[1] Get a list of known individuals in the history of Computer Science" << endl;
+    qout << "[2] Search for famous individuals from the history of Computer Science" << endl;
     qout << "[q] Quit" << endl;
 }
