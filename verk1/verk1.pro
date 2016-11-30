@@ -9,4 +9,12 @@ CONFIG -= app_bundle
 
 TEMPLATE = app
 
-SOURCES += main.cpp
+SOURCES += main.cpp \
+    person.cpp \
+    personservice.cpp \
+    personpresentation.cpp
+
+HEADERS += \
+    person.h \
+    personservice.h \
+    personpresentation.h
