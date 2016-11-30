@@ -6,7 +6,8 @@ void PersonPresentation::startPresentation() {
 
     QString input;
     while(1) {
-        // print menu
+        printMenu();
+
         qin >> input;
         if(input == "q")
             break;
@@ -20,4 +21,10 @@ void PersonPresentation::startPresentation() {
     }
     qout << "Closing." << endl;
     emit finished();
+}
+
+void PersonPresentation::printMenu() {
+    qout << "What do you want to do?" << endl;
+    qout << "[1] Do stuff" << endl;
+    qout << "[q] Quit" << endl;
 }

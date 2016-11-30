@@ -28,6 +28,8 @@ class PersonPresentation : public QObject
         PersonService service;
         QTextStream qout;
         QTextStream qin;
+
+        void printMenu();
 };
 
 #endif // PERSONPRESENTATION_H
