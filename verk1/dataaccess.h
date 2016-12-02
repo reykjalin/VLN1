@@ -12,19 +12,103 @@
 class DataAccess
 {
     public:
-        DataAccess();
+        DataAccess() { fileName = "personDB.csv"; sortOrder = utils::NAME; }
         DataAccess(QString fn)
             : fileName(fn) { }
 
-        bool readDataFromDB(QVector<Person> &pList) { return readData(pList, fileName); }
-        bool importFromFile(QVector<Person> &pList, QString fname);
-        bool saveData(QVector<Person> pList);
-    private:
-        QString fileName;
+        /**
+         * @brief readDataFromDB - read data from database (csv file for now)
+         * @param pList list to store info
+         * @return true if successful, false otherwise
+         */
+        bool readDataFromDB() { return readData(fileName); }
 
-        bool readData(QVector<Person> &pList, QString fname);
+        /**
+         * @brief importFromFile - import data from csv file
+         * Make sure that the file is on the form:
+         * Name;Gender;Birthyear;Deathyear
+         * Name;Gender;Birthyear;Deathyear
+         * ...
+         * @param pList - list to store info
+         * @param fname - name of file to import from
+         * @return true if successful, false otherwise
+         */
+        bool importFromFile(QString fname);
+
+        /**
+         * @brief saveData - Save current session
+         * @param pList - Data to save
+         * @return true if successful, false otherwise
+         */
+        bool saveData();
+
+         /**
+         * @brief addPerson - Add person to DB
+         * @param p Person to add
+         * @return true if successful, false otherwise e.g. if person is already in DB
+         */
+        bool addPerson(Person p);
+        /**
+         * @brief getPersonList - get list of Persons in database
+         * @return List containing person information
+         */
+        QVector<Person> getPersonList() { return pList; }
+
+        /**
+         * @brief sort - sort list of person objects
+         */
+        void sort();
+        /**
+         * @brief setSort - Set how sortOrder for sorting
+         * @param s Sort order for list of person objects
+         */
+        void setSort(utils::SORTS s) { sortOrder = s; }
+
+    private:
+        /**
+         * @brief fileName - Name of the DB file (currently .csv file)
+         */
+        QString fileName;
+        /**
+         * @brief pList - list of Person objects
+         */
+        QVector<Person> pList;
+        /**
+         * @brief sortOrder - Current sort order
+         */
+        utils::SORTS sortOrder;
+
+        /**
+         * @brief readData - read data from csv file
+         * @param pList - list to store the data
+         * @param fname - name of the file to read from
+         * @return true if successful, false otherwise
+         */
+        bool readData(QString fname);
+        /**
+         * @brief openWriteFile - Open file to write data
+         * @param file File to open
+         * @return true if successful, false otherwise
+         */
         bool openWriteFile(QFile &file);
+        /**
+         * @brief openReadFile - Open file to read data
+         * @param file File to open
+         * @return true if successful, false otherwise
+         */
         bool openReadFile(QFile &file);
+
+        void sortName()   { stable_sort(pList.begin(), pList.end(), utils::sortName); }
+        void sortGender() { stable_sort(pList.begin(), pList.end(), utils::sortGender); }
+        void sortBirth()  { stable_sort(pList.begin(), pList.end(), utils::sortBirth); }
+        void sortDeath()  { stable_sort(pList.begin(), pList.end(), utils::sortDeath); }
+
+        /**
+         * @brief moveAliveToBack - Moves alive persons to the back of the list.
+         * Since deathYear has value -1 if still alive, this is necessary so that
+         * people that are still alive appear at the correct point in a sorted list.
+         */
+        void moveAliveToBack();
 };
 
 #endif // DATAACCESS_H

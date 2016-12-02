@@ -11,30 +11,58 @@ using namespace std;
 class PersonService
 {
     public:
-        PersonService() { sortOrder = utils::NAME; }
+        PersonService() { }
 
-        QVector<Person> getPersonList() { return pList; }
+        /**
+         * @brief getPersonList - get list of Persons in database
+         * @return List containing person information
+         */
+        QVector<Person> getPersonList() { return db.getPersonList(); }
+        /**
+         * @brief findSimilar - search through DB for something simalar to expr
+         * @param expr Query to search for
+         * @return List of similar entries
+         */
         QVector<Person> findSimilar(QString expr);
 
-        bool closeService() { return db.saveData(pList); }
-        bool startService() { return db.readDataFromDB(pList); }
-        bool addPerson(Person p);
-        bool loadDataFromFile(QString fname) { return db.importFromFile(pList, fname); }
+        /**
+         * @brief closeService - close service and save information
+         * @return true if successful, false otherwise
+         */
+        bool closeService() { return db.saveData(); }
+        /**
+         * @brief startService - start service; load information
+         * @return true if successful, false otherwise
+         */
+        bool startService() { return db.readDataFromDB(); }
+        /**
+         * @brief addPerson - Add person to DB
+         * @param p Person to add
+         * @return true if successful, false otherwise
+         */
+        bool addPerson(Person p) { return db.addPerson(p); }
+        /**
+         * @brief loadDataFromFile - Load file into DB
+         * @param fname File to load into DB
+         * @return true if successful, false otherwise
+         */
+        bool loadDataFromFile(QString fname) { return db.importFromFile(fname); }
 
-        void sort();
-        void setSort(utils::SORTS s) { sortOrder = s; }
+        /**
+         * @brief setSort - Set how sortOrder for sorting
+         * @param s Sort order for list of person objects
+         */
+        void setSort(utils::SORTS s) { db.setSort(s); }
+        /**
+         * @brief sort - sort list of person objects
+         */
+        void sort() { db.sort(); }
 
     private:
-        QVector<Person> pList;
+        /**
+         * @brief db - Database connection
+         */
         DataAccess db;
-        utils::SORTS sortOrder;
-
-        void sortName()   { stable_sort(pList.begin(), pList.end(), utils::sortName); }
-        void sortGender() { stable_sort(pList.begin(), pList.end(), utils::sortGender); }
-        void sortBirth()  { stable_sort(pList.begin(), pList.end(), utils::sortBirth); }
-        void sortDeath()  { stable_sort(pList.begin(), pList.end(), utils::sortDeath); }
-
-        void moveAliveToBack();
 };
 
 #endif // PERSONSERVICE_H

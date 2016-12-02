@@ -1,17 +1,14 @@
 #include "dataaccess.h"
 
-DataAccess::DataAccess() {
-    fileName = "personDB.csv";
-}
-
-bool DataAccess::saveData(QVector<Person> pList) {
+bool DataAccess::saveData() {
     // Open file, return false if fails
     QFile data(fileName);
     if(!openWriteFile(data))
         return false;
 
     // Write data to file in CSV format seperated by ';'
-    // Columns are: Name ; Gender ; Year of birth ; Year of death
+    // Format is:
+    // Name;Gender;Year of birth;Year of death
     QTextStream fout(&data);
     for(int i = 0; i < pList.length(); i++) {
         fout << pList[i].getName()      << ";"
@@ -23,15 +20,19 @@ bool DataAccess::saveData(QVector<Person> pList) {
     return true;
 }
 
-bool DataAccess::readData(QVector<Person> &pList, QString fname) {
+bool DataAccess::readData(QString fname) {
     // Open file, return false if fails
     if(fname.isEmpty())
         fname = fileName;
     QFile data(fname);
+
+    // If file doesn't exist, create empty file
     if(!data.exists()){
-        openWriteFile(data);
+        if(!openWriteFile(data))
+            return false;
         data.close();
     }
+    // Open file to read data
     if(!openReadFile(data))
         return false;
 
@@ -42,7 +43,8 @@ bool DataAccess::readData(QVector<Person> &pList, QString fname) {
         QStringList columns = line.split(";");
 
         // If column length is not 4, the data isn't using correct format
-        // Format is: Name ; Gender ; Year of birth ; Year of death
+        // Format is:
+        // Name;Gender;Year of birth;Year of death
         if(columns.length() != 4)
             return false;
 
@@ -53,13 +55,13 @@ bool DataAccess::readData(QVector<Person> &pList, QString fname) {
         int deathYear = utils::stoi(columns[3], deathSuccess);
         // If conversion fails, year was not a number
         //    => incorrect format or something went wrong
+        //  Solution: Skip this entry, move to next entry
         if(!(birthSuccess && deathSuccess))
-            return false;
+            continue;
 
         // Add if not already in list
         Person p(columns[0], columns[1], birthYear, deathYear);
-        if(!pList.contains(p))
-            pList.append(p);
+        addPerson(p);
     }
     data.close();
     return true;
@@ -77,8 +79,41 @@ bool DataAccess::openReadFile(QFile &file) {
     return true;
 }
 
-bool DataAccess::importFromFile(QVector<Person> &pList, QString fname) {
+bool DataAccess::importFromFile(QString fname) {
     if(QFile::exists(fname))
-        return readData(pList, fname);
+        return readData(fname);
     return false;
+}
+
+bool DataAccess::addPerson(Person p) {
+    if(!pList.contains(p)) {
+        pList.append(p);
+        return true;
+    }
+    return false;
+}
+
+void DataAccess::sort() {
+    // Make sure the list is ALWAYS sorted by name within each group
+    switch(sortOrder) {
+        case utils::NAME:   sortName(); break;
+        case utils::GENDER: sortName(); sortGender(); break;
+        case utils::BIRTH:  sortName(); sortBirth();  break;
+        case utils::DEATH:  sortName(); sortDeath();  moveAliveToBack(); break;
+        default:
+            break;
+    }
+    // moveAliveToBack() call for sorting by death year is necessary so that
+    // persons that are still alive (where deathYear = -1) go to the correct
+    // place in the list
+}
+
+void DataAccess::moveAliveToBack() {
+    // Move every person with deathYear = -1 to the back of the list
+    for(int i = 0; i < pList.length(); i++) {
+        if(pList[0].getDeathYear() != -1)
+            break;
+        pList.append(pList[0]);
+        pList.removeFirst();
+    }
 }

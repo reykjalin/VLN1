@@ -1,12 +1,33 @@
 #include "personpresentation.h"
 
+PersonPresentation::PersonPresentation(QObject *parent)
+    : QObject(parent), qout(stdout), qin(stdin)
+{
+    // Initialize selection descriptions for main menu
+    selectionDescriptions = QVector<QString>(SIZE);
+    selectionDescriptions.insert(
+                GETLIST, "Get a list of known individuals in the history of Computer Science");
+    selectionDescriptions.insert(
+                ADDPERSON, "Add new person");
+    selectionDescriptions.insert(
+                SEARCH, "Search for famous individuals from the history of Computer Science");
+    selectionDescriptions.insert(
+                ORDER, "Choos the order in which the list of individuals will appear");
+    selectionDescriptions.insert(
+                LOADFILE, "Import data from external file");
+}
+
 void PersonPresentation::startPresentation() {
+    // Skip loop and don't save data if isOK becomes false
     bool isOK = true;
     if(!service.startService()) {
         qout << "Something went wrong when accessing saved data." << endl;
         isOK = false;
     }
-    service.sort(); // Sort initial list
+
+    // Only sort if everything is a-OK
+    if(isOK)
+        service.sort(); // Sort initial list
 
     while(isOK) {
         printMenu();
@@ -17,32 +38,42 @@ void PersonPresentation::startPresentation() {
             break;
 
         if(input == utils::itos(GETLIST)) {
+
             printPersonList(service.getPersonList());
+
         }
         else if(input == utils::itos(ADDPERSON)) {
+
             qout << endl;
             qin.read(1); // Remove extra newlines in buffer
             if(!service.addPerson(createPerson()))
                 qout << "This person is already registered in the database."
                      << endl;
             service.sort(); // Sort after adding to list
+
         }
         else if(input == utils::itos(SEARCH)) {
+
             QVector<Person> found = find();
             if(found.length() == 0)
                 qout << "Nothing found." << endl;
             else
                 printPersonList(found);
+
         }
         else if(input == utils::itos(ORDER)) {
+
             sort();         // Configure sort
             service.sort(); // Perform the actual sort
             printPersonList(service.getPersonList());
+
         }
         else if(input == utils::itos(LOADFILE)) {
+
             loadInfoFromFile();
             service.sort();      // Sort new data
             printPersonList(service.getPersonList());
+
         }
         else
             qout << "Invalid input." << endl;
@@ -65,19 +96,11 @@ void PersonPresentation::printMenu() {
     qout << endl;
     qout << "What do you want to do?" << endl;
 
-    qout << "[" + utils::itos(GETLIST) + "] Get a list of known individuals in "
-         << "the history of Computer Science" << endl;
-
-    qout << "[" + utils::itos(ADDPERSON) + "] Add new person" << endl;
-
-    qout << "[" + utils::itos(SEARCH) + "] Search for famous individuals from "
-         << "the history of Computer Science" << endl;
-
-    qout << "[" + utils::itos(ORDER) + "] Choose the order in which the list appears"
-         << endl;
-
-    qout << "[" + utils::itos(LOADFILE) + "] Import data from external file"
-         << endl;
+    qout << "[" + utils::itos(GETLIST)   + "] " + selectionDescriptions[GETLIST]   << endl;
+    qout << "[" + utils::itos(ADDPERSON) + "] " + selectionDescriptions[ADDPERSON] << endl;
+    qout << "[" + utils::itos(SEARCH)    + "] " + selectionDescriptions[SEARCH]    << endl;
+    qout << "[" + utils::itos(ORDER)     + "] " + selectionDescriptions[ORDER]     << endl;
+    qout << "[" + utils::itos(LOADFILE)  + "] " + selectionDescriptions[LOADFILE]  << endl;
 
     qout << "[q] Quit" << endl << endl;
     qout << "Selection: ";

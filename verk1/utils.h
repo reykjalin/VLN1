@@ -25,11 +25,14 @@ class utils
          */
         static QString itos(int n) { return QString::number(n); }
 
+        // These functions are comparators used by stable_sort to sort
+        // the person list
         static bool sortName(const Person &lhs, const Person &rhs);
         static bool sortGender(const Person &lhs, const Person &rhs);
         static bool sortBirth(const Person &lhs, const Person &rhs);
         static bool sortDeath(const Person &lhs, const Person &rhs);
 
+        // ENUM for sort orders
         enum SORTS {
             NAME,
             GENDER,

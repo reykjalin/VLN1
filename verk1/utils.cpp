@@ -1,6 +1,7 @@
 #include "utils.h"
 
 int utils::stoi(QString s, bool &success) {
+    // success indicates whether the conversion was successful
     success = true;
     return s.toInt(&success);
 }
