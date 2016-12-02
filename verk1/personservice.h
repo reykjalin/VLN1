@@ -1,6 +1,8 @@
 #ifndef PERSONSERVICE_H
 #define PERSONSERVICE_H
 
+#include <algorithm>
+
 #include "person.h"
 #include "dataaccess.h"
 
@@ -18,10 +20,14 @@ class PersonService
         bool startService() { return db.readDataFromDB(pList); }
         bool addPerson(Person p);
 
+        void sortName()   { stable_sort(pList.begin(), pList.end(), utils::sortName); }
+        void sortGender() { stable_sort(pList.begin(), pList.end(), utils::sortGender); }
+        void sortBirth()  { stable_sort(pList.begin(), pList.end(), utils::sortBirth); }
+        void sortDeath()  { stable_sort(pList.begin(), pList.end(), utils::sortDeath); }
+
     private:
         QVector<Person> pList;
         DataAccess db;
-
 };
 
 #endif // PERSONSERVICE_H

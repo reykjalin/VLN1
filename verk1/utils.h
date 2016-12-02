@@ -3,6 +3,8 @@
 
 #include <QString>
 
+#include "person.h"
+
 class utils
 {
     public:
@@ -22,6 +24,11 @@ class utils
          * @return string of the int passed in variable n
          */
         static QString itos(int n) { return QString::number(n); }
+
+        static bool sortName(const Person &lhs, const Person &rhs);
+        static bool sortGender(const Person &lhs, const Person &rhs);
+        static bool sortBirth(const Person &lhs, const Person &rhs);
+        static bool sortDeath(const Person &lhs, const Person &rhs);
 };
 
 #endif // UTILS_H

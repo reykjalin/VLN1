@@ -38,7 +38,8 @@ void PersonPresentation::startPresentation() {
                 printPersonList(found);
         }
         else if(input == utils::itos(ORDER)) {
-            // ORDER
+            sort();
+            printPersonList(service.getPersonList());
         }
         else
             qout << "Invalid input." << endl;
@@ -48,8 +49,8 @@ void PersonPresentation::startPresentation() {
         qout << "Saving new data..." << endl;
 
     if(!service.closeService())
-        qout << "Something went wrong when saving new data to database. " \
-                "Please check data integrity" << endl;
+        qout << "Something went wrong when saving new data to database. "
+             << "Please check data integrity" << endl;
 
     // Close program
     qout << "Closing." << endl;
@@ -58,11 +59,18 @@ void PersonPresentation::startPresentation() {
 
 void PersonPresentation::printMenu() {
     qout << "What do you want to do?" << endl;
-    qout << "[" + utils::itos(GETLIST) + "] Get a list of known individuals in " \
-            "the history of Computer Science" << endl;
+
+    qout << "[" + utils::itos(GETLIST) + "] Get a list of known individuals in "
+         << "the history of Computer Science" << endl;
+
     qout << "[" + utils::itos(ADDPERSON) + "] Add new person" << endl;
-    qout << "[" + utils::itos(SEARCH) + "] Search for famous individuals from " \
-            "the history of Computer Science" << endl;
+
+    qout << "[" + utils::itos(SEARCH) + "] Search for famous individuals from "
+         << "the history of Computer Science" << endl;
+
+    qout << "[" + utils::itos(ORDER) + "] Choose the order in which the list appears"
+         << endl;
+
     qout << "[q] Quit" << endl << endl;
     qout << "Selection: ";
     qout.flush();
@@ -174,4 +182,29 @@ QVector<Person> PersonPresentation::find() {
         return service.findSimilar(expression) + service.findSimilar("-1");
     }
     return service.findSimilar(expression);
+}
+
+void PersonPresentation::sort() {
+    QString sort;
+    printSortMenu();
+    qin >> sort;
+    if(sort == utils::itos(NAME))
+        service.sortName();
+    else if(sort == utils::itos(GENDER))
+        service.sortGender();
+    else if(sort == utils::itos(BIRTH))
+        service.sortBirth();
+    else if(sort == utils::itos(DEATH))
+        service.sortDeath();
+    qout << endl;
+}
+
+void PersonPresentation::printSortMenu() {
+    qout << "[" + utils::itos(NAME)   + "] Name"          << endl;
+    qout << "[" + utils::itos(GENDER) + "] Gender"        << endl;
+    qout << "[" + utils::itos(BIRTH)  + "] Year of birth" << endl;
+    qout << "[" + utils::itos(DEATH)  + "] Year of death" << endl;
+    qout << "Any other selection will bring you back to the main menu" << endl << endl;
+    qout << "Sort by: ";
+    qout.flush();
 }

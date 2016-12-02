@@ -37,6 +37,8 @@ class PersonPresentation : public QObject
         void printDashes(int n);
         void printSpacing(int n);
         void printSeperator(int longestN, int longestG, int longestId);
+        void printSortMenu();
+        void sort();
 
         Person          createPerson();
         QVector<Person> find();
@@ -46,6 +48,13 @@ class PersonPresentation : public QObject
             ADDPERSON,
             SEARCH,
             ORDER
+        };
+
+        enum SORTS {
+            NAME,
+            GENDER,
+            BIRTH,
+            DEATH
         };
 };
 
