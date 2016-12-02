@@ -44,8 +44,8 @@ bool DataAccess::readData(QVector<Person> &pList) {
         // Convert year of birth and year of death to int
         bool birthSuccess = true;
         bool deathSuccess = true;
-        int birthYear = columns[2].toInt(&birthSuccess);
-        int deathYear = columns[3].toInt(&deathSuccess);
+        int birthYear = utils::stoi(columns[2], birthSuccess);
+        int deathYear = utils::stoi(columns[3], deathSuccess);
         // If conversion fails, year was not a number
         //    => incorrect format or something went wrong
         if(!(birthSuccess && deathSuccess))
