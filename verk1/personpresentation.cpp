@@ -12,7 +12,7 @@ PersonPresentation::PersonPresentation(QObject *parent)
     selectionDescriptions.insert(
                 SEARCH, "Search for famous individuals from the history of Computer Science");
     selectionDescriptions.insert(
-                ORDER, "Choos the order in which the list of individuals will appear");
+                ORDER, "Choose the order in which the list of individuals will appear");
     selectionDescriptions.insert(
                 LOADFILE, "Import data from external file");
 }
@@ -209,6 +209,8 @@ QVector<Person> PersonPresentation::find() {
     QString expression;
     qout << "Search for: ";
     qout.flush();
+
+    qin.read(1);            // Clear input buffer
     expression = qin.readLine();
     if(expression.toLower().contains("alive") ||
        expression.toLower().contains("still"))
