@@ -29,6 +29,14 @@ class utils
         static bool sortGender(const Person &lhs, const Person &rhs);
         static bool sortBirth(const Person &lhs, const Person &rhs);
         static bool sortDeath(const Person &lhs, const Person &rhs);
+
+        enum SORTS {
+            NAME,
+            GENDER,
+            BIRTH,
+            DEATH
+        };
+
 };
 
 #endif // UTILS_H

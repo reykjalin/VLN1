@@ -49,13 +49,6 @@ class PersonPresentation : public QObject
             SEARCH,
             ORDER
         };
-
-        enum SORTS {
-            NAME,
-            GENDER,
-            BIRTH,
-            DEATH
-        };
 };
 
 #endif // PERSONPRESENTATION_H

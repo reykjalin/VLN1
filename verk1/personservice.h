@@ -11,7 +11,7 @@ using namespace std;
 class PersonService
 {
     public:
-        PersonService() { }
+        PersonService() { sortOrder = utils::NAME; }
 
         QVector<Person> getPersonList() { return pList; }
         QVector<Person> findSimilar(QString expr);
@@ -20,14 +20,20 @@ class PersonService
         bool startService() { return db.readDataFromDB(pList); }
         bool addPerson(Person p);
 
+        void sort();
+        void setSort(utils::SORTS s) { sortOrder = s; }
+
+    private:
+        QVector<Person> pList;
+        DataAccess db;
+        utils::SORTS sortOrder;
+
         void sortName()   { stable_sort(pList.begin(), pList.end(), utils::sortName); }
         void sortGender() { stable_sort(pList.begin(), pList.end(), utils::sortGender); }
         void sortBirth()  { stable_sort(pList.begin(), pList.end(), utils::sortBirth); }
         void sortDeath()  { stable_sort(pList.begin(), pList.end(), utils::sortDeath); }
 
-    private:
-        QVector<Person> pList;
-        DataAccess db;
+        void moveAliveToBack();
 };
 
 #endif // PERSONSERVICE_H
