@@ -17,8 +17,7 @@ class DataAccess
             : fileName(fn) { }
 
         bool readDataFromDB(QVector<Person> &pList) { return readData(pList, fileName); }
-        bool importFromFile(QVector<Person> &pList,
-                            QString fname) { return readData(pList, fname); }
+        bool importFromFile(QVector<Person> &pList, QString fname);
         bool saveData(QVector<Person> pList);
     private:
         QString fileName;

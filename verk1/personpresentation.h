@@ -30,7 +30,6 @@ class PersonPresentation : public QObject
         QTextStream   qin;
         PersonService service;
 
-        void findLongestNameAndGender(int &longestN, int &longestG, QVector<Person> pList);
         void printMenu();
         void printPersonList(QVector<Person> pList);
         void printListHeader(int longestN, int longestG, int longestId);
@@ -38,7 +37,11 @@ class PersonPresentation : public QObject
         void printSpacing(int n);
         void printSeperator(int longestN, int longestG, int longestId);
         void printSortMenu();
+
         void sort();
+        void findLongestNameAndGender(int &longestN, int &longestG, QVector<Person> pList);
+
+        void loadInfoFromFile();
 
         Person          createPerson();
         QVector<Person> find();
@@ -47,7 +50,8 @@ class PersonPresentation : public QObject
             GETLIST = 1,
             ADDPERSON,
             SEARCH,
-            ORDER
+            ORDER,
+            LOADFILE
         };
 };
 

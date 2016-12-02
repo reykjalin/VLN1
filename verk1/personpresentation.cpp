@@ -39,6 +39,11 @@ void PersonPresentation::startPresentation() {
             service.sort(); // Perform the actual sort
             printPersonList(service.getPersonList());
         }
+        else if(input == utils::itos(LOADFILE)) {
+            loadInfoFromFile();
+            service.sort();      // Sort new data
+            printPersonList(service.getPersonList());
+        }
         else
             qout << "Invalid input." << endl;
     }
@@ -69,6 +74,9 @@ void PersonPresentation::printMenu() {
          << "the history of Computer Science" << endl;
 
     qout << "[" + utils::itos(ORDER) + "] Choose the order in which the list appears"
+         << endl;
+
+    qout << "[" + utils::itos(LOADFILE) + "] Import data from external file"
          << endl;
 
     qout << "[q] Quit" << endl << endl;
@@ -211,4 +219,19 @@ void PersonPresentation::printSortMenu() {
     qout << "Any other selection will bring you back to the main menu" << endl << endl;
     qout << "Sort by: ";
     qout.flush();
+}
+
+void PersonPresentation::loadInfoFromFile() {
+    qout << endl;
+    QString fname;
+
+    qout << "Enter file name: ";
+    qout.flush();
+    qin >> fname;
+
+    if(!service.loadDataFromFile(fname)) {
+        qout << "Error opening file. This probably means that the file doesn't exist."
+             << endl;
+        return;
+    }
 }

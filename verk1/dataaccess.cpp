@@ -28,6 +28,10 @@ bool DataAccess::readData(QVector<Person> &pList, QString fname) {
     if(fname.isEmpty())
         fname = fileName;
     QFile data(fname);
+    if(!data.exists()){
+        openWriteFile(data);
+        data.close();
+    }
     if(!openReadFile(data))
         return false;
 
@@ -52,8 +56,12 @@ bool DataAccess::readData(QVector<Person> &pList, QString fname) {
         if(!(birthSuccess && deathSuccess))
             return false;
 
-        pList.append(Person(columns[0], columns[1], birthYear, deathYear));
+        // Add if not already in list
+        Person p(columns[0], columns[1], birthYear, deathYear);
+        if(!pList.contains(p))
+            pList.append(p);
     }
+    data.close();
     return true;
 }
 
@@ -67,4 +75,10 @@ bool DataAccess::openReadFile(QFile &file) {
     if(!file.open(QFile::ReadOnly | QFile::Text))
         return false;
     return true;
+}
+
+bool DataAccess::importFromFile(QVector<Person> &pList, QString fname) {
+    if(QFile::exists(fname))
+        return readData(pList, fname);
+    return false;
 }

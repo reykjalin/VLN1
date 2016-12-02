@@ -19,6 +19,7 @@ class PersonService
         bool closeService() { return db.saveData(pList); }
         bool startService() { return db.readDataFromDB(pList); }
         bool addPerson(Person p);
+        bool loadDataFromFile(QString fname) { return db.importFromFile(pList, fname); }
 
         void sort();
         void setSort(utils::SORTS s) { sortOrder = s; }
