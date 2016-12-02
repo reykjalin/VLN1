@@ -16,11 +16,14 @@ class DataAccess
         DataAccess(QString fn)
             : fileName(fn) { }
 
-        bool readData(QVector<Person> &pList);
+        bool readDataFromDB(QVector<Person> &pList) { return readData(pList, fileName); }
+        bool importFromFile(QVector<Person> &pList,
+                            QString fname) { return readData(pList, fname); }
         bool saveData(QVector<Person> pList);
     private:
         QString fileName;
 
+        bool readData(QVector<Person> &pList, QString fname);
         bool openWriteFile(QFile &file);
         bool openReadFile(QFile &file);
 };

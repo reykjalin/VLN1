@@ -53,3 +53,10 @@ bool isValidDeathYear(int death, int birth) {
 int getCurrentYear() {
     return QDate::currentDate().year();
 }
+
+bool operator ==(const Person &lhs, const Person &rhs) {
+    return  lhs.name      == rhs.name      &&
+            lhs.gender    == rhs.gender    &&
+            lhs.birthYear == rhs.birthYear &&
+            lhs.deathYear == rhs.deathYear;
+}

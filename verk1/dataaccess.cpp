@@ -17,16 +17,17 @@ bool DataAccess::saveData(QVector<Person> pList) {
         fout << pList[i].getName()      << ";"
              << pList[i].getGender()    << ";"
              << pList[i].getBirthYear() << ";"
-             << pList[i].getDeathYear() << ";"
-             << endl;
+             << pList[i].getDeathYear() << endl;
     }
 
     return true;
 }
 
-bool DataAccess::readData(QVector<Person> &pList) {
+bool DataAccess::readData(QVector<Person> &pList, QString fname) {
     // Open file, return false if fails
-    QFile data(fileName);
+    if(fname.isEmpty())
+        fname = fileName;
+    QFile data(fname);
     if(!openReadFile(data))
         return false;
 

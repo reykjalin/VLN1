@@ -20,17 +20,18 @@ class Person
             : name(copyMe.name), gender(copyMe.gender),
               birthYear(copyMe.birthYear), deathYear(copyMe.deathYear) { }
 
-        QString getName() const   { return name; }
+        QString getName()   const { return name; }
         QString getGender() const { return gender; }
-        int getBirthYear() const { return birthYear; }
-        int getDeathYear() const { return deathYear; }
+        int getBirthYear()  const { return birthYear; }
+        int getDeathYear()  const { return deathYear; }
 
         void setName(QString n)   { name = n; }
         void setGender(QString g) { gender = g; }
         void setBirthYear(int b) { birthYear = b; }
         void setDeathYear(int d) { deathYear = d; }
 
-        bool operator >(const Person &rhs);
+        friend bool operator >(const Person &lhs, const Person &rhs);
+        friend bool operator ==(const Person &lhs, const Person &rhs);
         friend QTextStream& operator <<(QTextStream &out, const Person &p);
         friend QTextStream& operator >>(QTextStream &in, Person &p);
 

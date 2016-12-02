@@ -12,9 +12,13 @@ TEMPLATE = app
 SOURCES += main.cpp \
     person.cpp \
     personservice.cpp \
-    personpresentation.cpp
+    personpresentation.cpp \
+    dataaccess.cpp \
+    utils.cpp
 
 HEADERS += \
     person.h \
     personservice.h \
-    personpresentation.h
+    personpresentation.h \
+    dataaccess.h \
+    utils.h
