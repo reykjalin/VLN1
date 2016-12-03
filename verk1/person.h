@@ -35,6 +35,9 @@ class Person
         friend QTextStream& operator <<(QTextStream &out, const Person &p);
         friend QTextStream& operator >>(QTextStream &in, Person &p);
 
+        static bool isValidYear(int year);
+        static bool isValidDeathYear(int death, int birth);
+
     private:
         QString name;
         QString gender;

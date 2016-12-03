@@ -86,11 +86,34 @@ bool DataAccess::importFromFile(QString fname) {
 }
 
 bool DataAccess::addPerson(Person p) {
-    if(!pList.contains(p)) {
-        pList.append(p);
-        return true;
-    }
-    return false;
+    if(pList.contains(p))
+        return false;
+
+    pList.append(p);
+    return true;
+}
+
+bool DataAccess::editPerson(unsigned int index, Person newInfo) {
+    // unsigned, no negative numbers
+    // cast to unsigned because length() returns int
+    if(index >= static_cast<unsigned int>(pList.length()) )
+        return false;
+
+    pList[index].setName     (newInfo.getName()     );
+    pList[index].setGender   (newInfo.getGender()   );
+    pList[index].setBirthYear(newInfo.getBirthYear());
+    pList[index].setDeathYear(newInfo.getDeathYear());
+    return true;
+}
+
+bool DataAccess::getPerson(unsigned int index, Person &p) {
+    // unsigned, no negative numbers
+    // cast to unsigned because length() returns int
+    if(index >= static_cast<unsigned int>(pList.length()) )
+        return false;
+
+    p = pList[index];
+    return true;
 }
 
 void DataAccess::sort() {

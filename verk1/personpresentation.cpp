@@ -10,6 +10,8 @@ PersonPresentation::PersonPresentation(QObject *parent)
     selectionDescriptions.insert(
                 ADDPERSON, "Add new person");
     selectionDescriptions.insert(
+                EDITPERSON, "Edit information on individual in the list");
+    selectionDescriptions.insert(
                 SEARCH, "Search for famous individuals from the history of Computer Science");
     selectionDescriptions.insert(
                 ORDER, "Choose the order in which the list of individuals will appear");
@@ -75,6 +77,13 @@ void PersonPresentation::startPresentation() {
             printPersonList(service.getPersonList());
 
         }
+        else if(input == utils::itos(EDITPERSON)) {
+
+            editPerson();
+            service.sort();
+            printPersonList(service.getPersonList());
+
+        }
         else
             qout << "Invalid input." << endl;
     }
@@ -96,11 +105,8 @@ void PersonPresentation::printMenu() {
     qout << endl;
     qout << "What do you want to do?" << endl;
 
-    qout << "[" + utils::itos(GETLIST)   + "] " + selectionDescriptions[GETLIST]   << endl;
-    qout << "[" + utils::itos(ADDPERSON) + "] " + selectionDescriptions[ADDPERSON] << endl;
-    qout << "[" + utils::itos(SEARCH)    + "] " + selectionDescriptions[SEARCH]    << endl;
-    qout << "[" + utils::itos(ORDER)     + "] " + selectionDescriptions[ORDER]     << endl;
-    qout << "[" + utils::itos(LOADFILE)  + "] " + selectionDescriptions[LOADFILE]  << endl;
+    for(int i = GETLIST; i < SIZE; i++)
+        qout << "[" + utils::itos(i) + "] " + selectionDescriptions[i] << endl;
 
     qout << "[q] Quit" << endl << endl;
     qout << "Selection: ";
@@ -244,6 +250,113 @@ void PersonPresentation::printSortMenu() {
     qout << "Any other selection will bring you back to the main menu" << endl << endl;
     qout << "Sort by: ";
     qout.flush();
+}
+
+void PersonPresentation::editPerson() {
+    QVector<Person> pList = service.getPersonList();
+    printPersonList(pList);
+    QString inp;
+    int id;
+    bool success = false;
+    // Get valid selection
+    do {
+        qout << "Which individual would you like to edit? [enter ID]: ";
+        qout.flush();
+        qin >> inp;
+        id = utils::stoi(inp, success);
+        if(!success)
+            qout << "Invalid input" << endl;
+    } while(!success && id >= 0 && id < pList.length());
+
+    Person toEdit;
+    // Get person info
+    service.getPerson(id, toEdit);
+    // Edit info
+    editPerson(toEdit);
+    // Edit info in DB
+    service.editPerson(id, toEdit);
+}
+
+void PersonPresentation::printEditMenu(Person p) {
+        qout << endl;
+        qout << "Editing: " << endl;
+        qout << p << endl;
+
+        qout << "Which do you want to change?" << endl;
+        qout << "1. Name"                      << endl;
+        qout << "2. Gender"                    << endl;
+        qout << "3. Year of birth"             << endl;
+        qout << "4. Year of death"             << endl;
+        qout << "5. Done, return to main menu" << endl << endl;
+}
+
+void PersonPresentation::editPerson(Person &p) {
+    QString sel; // initialized as ""
+    while(sel != "5") {
+        printEditMenu(p);
+
+        do {
+            qout << "Selection: ";
+            qout.flush();
+            qin >> sel;
+        } while(sel != "1" && sel != "2" && sel != "3" && sel != "4" && sel != "5");
+
+        if(sel == "1")
+            changeName(p);
+        else if(sel == "2")
+            changeGender(p);
+        else if(sel == "3")
+            changeBirthYear(p);
+        else if(sel == "4")
+            changeDeathYear(p);
+    }
+}
+void PersonPresentation::changeName(Person &p) {
+    qout << "New name: ";
+    qout.flush();
+    qin.read(1);
+    QString name = qin.readLine();
+    p.setName(name);
+}
+
+void PersonPresentation::changeGender(Person &p) {
+    qout << "New gender: ";
+    qout.flush();
+    qin.read(1);
+    QString gender = qin.readLine();
+    p.setGender(gender);
+}
+
+void PersonPresentation::changeBirthYear(Person &p) {
+    qout << "New year of birth: ";
+    qout.flush();
+    QString yearStr;
+    int year;
+    bool success;
+    // Get valid year
+    do {
+        qin >> yearStr;
+        year = utils::stoi(yearStr, success);
+        if(!success)
+            qout << "Invalid year, try again." << endl;
+    } while(!success && Person::isValidYear(year));
+    p.setBirthYear(year);
+}
+
+void PersonPresentation::changeDeathYear(Person &p) {
+    qout << "New year of death: ";
+    qout.flush();
+    QString yearStr;
+    int year;
+    bool success;
+    // Get valid year
+    do {
+        qin >> yearStr;
+        year = utils::stoi(yearStr, success);
+        if(!success)
+            qout << "Invalid year, try again." << endl;
+    } while(!success && Person::isValidDeathYear(year, p.getBirthYear()));
+    p.setDeathYear(year);
 }
 
 void PersonPresentation::loadInfoFromFile() {

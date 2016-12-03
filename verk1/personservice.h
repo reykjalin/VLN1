@@ -35,12 +35,28 @@ class PersonService
          * @return true if successful, false otherwise
          */
         bool startService() { return db.readDataFromDB(); }
+
         /**
          * @brief addPerson - Add person to DB
          * @param p Person to add
          * @return true if successful, false otherwise
          */
         bool addPerson(Person p) { return db.addPerson(p); }
+        /**
+         * @brief getPerson - Get person from DB
+         * @param index Index of person to fetch
+         * @param p Person object to store information
+         * @return true if successful, false otherwise
+         */
+        bool getPerson(unsigned int index, Person &p) { return db.getPerson(index, p); }
+        /**
+         * @brief editPerson - Edit person in DB
+         * @param index Index of person to edit
+         * @param newInfo Person object containing new information
+         * @return
+         */
+        bool editPerson(unsigned int index, Person newInfo) { return db.editPerson(index, newInfo); }
+
         /**
          * @brief loadDataFromFile - Load file into DB
          * @param fname File to load into DB

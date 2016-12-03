@@ -42,12 +42,25 @@ class DataAccess
          */
         bool saveData();
 
-         /**
+        /**
          * @brief addPerson - Add person to DB
          * @param p Person to add
          * @return true if successful, false otherwise e.g. if person is already in DB
          */
         bool addPerson(Person p);
+        /**
+         * @brief editPerson - Edit person information in the DB
+         * @param index Index to this person in list (shown in table of persons)
+         * @return true if successful, false otherwise e.g. if person doesn't exist
+         */
+        bool editPerson(unsigned int index, Person newInfo);
+        /**
+         * @brief getPerson - Get information on individual in DB
+         * @param index Index to the requested person
+         * @param p Person object to store the person information
+         * @return true if successful, false otherwise
+         */
+        bool getPerson(unsigned int index, Person &p);
         /**
          * @brief getPersonList - get list of Persons in database
          * @return List containing person information

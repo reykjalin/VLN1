@@ -30,23 +30,23 @@ QTextStream& operator >>(QTextStream &in, Person &p) {
 
     do {
         cout << "Enter year of birth [0 - " << getCurrentYear() << "]: "; in >> p.birthYear;
-        if(!isValidYear(p.birthYear))
+        if(!Person::isValidYear(p.birthYear))
             cout << "Invalid year of birth." << endl;
-    } while(!isValidYear(p.birthYear));
+    } while(!Person::isValidYear(p.birthYear));
 
     do {
         cout << "Enter year of death [-1 if still alive]: "; in >> p.deathYear;
-        if(!isValidDeathYear(p.deathYear, p.birthYear))
+        if(!Person::isValidDeathYear(p.deathYear, p.birthYear))
             cout << "Invalid year of death." << endl;
-    } while(!isValidDeathYear(p.deathYear, p.birthYear));
+    } while(!Person::isValidDeathYear(p.deathYear, p.birthYear));
 
     return in;
 }
 
-bool isValidYear(int year) {
+bool Person::isValidYear(int year) {
     return year >= 0 && year <= getCurrentYear();
 }
-bool isValidDeathYear(int death, int birth) {
+bool Person::isValidDeathYear(int death, int birth) {
     return death == -1 || (death >= birth && isValidYear(death));
 }
 

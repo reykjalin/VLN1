@@ -94,6 +94,19 @@ class PersonPresentation : public QObject
          */
         Person          createPerson();
         /**
+         * @brief editPerson - allow user to edit information of some individual
+         */
+        void editPerson();
+        void printEditMenu(Person p);
+
+        // Change person object information
+        void editPerson(Person &p);
+        void changeName(Person &p);
+        void changeGender(Person &p);
+        void changeBirthYear(Person &p);
+        void changeDeathYear(Person &p);
+
+        /**
          * @brief find - Allow the user to search in the DB
          * @return List of person objects found
          */
@@ -106,6 +119,7 @@ class PersonPresentation : public QObject
         enum SELECTIONS {
             GETLIST = 1,
             ADDPERSON,
+            EDITPERSON,
             SEARCH,
             ORDER,
             LOADFILE,
