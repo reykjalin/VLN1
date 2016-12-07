@@ -10,15 +10,15 @@ CONFIG -= app_bundle
 TEMPLATE = app
 
 SOURCES += main.cpp \
-    person.cpp \
-    personservice.cpp \
-    personpresentation.cpp \
-    dataaccess.cpp \
-    utils.cpp
+    DataAccess/dataaccess.cpp \
+    Models/person.cpp \
+    UI/personpresentation.cpp \
+    Service/personservice.cpp \
+    Utilities/utils.cpp
 
 HEADERS += \
-    person.h \
-    personservice.h \
-    personpresentation.h \
-    dataaccess.h \
-    utils.h
+    DataAccess/dataaccess.h \
+    Models/person.h \
+    Service/personservice.h \
+    UI/personpresentation.h \
+    Utilities/utils.h

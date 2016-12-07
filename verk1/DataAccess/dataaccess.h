@@ -6,8 +6,8 @@
 #include <QTextStream>
 #include <QFile>
 
-#include "person.h"
-#include "utils.h"
+#include "Models/person.h"
+#include "Utilities/utils.h"
 
 class DataAccess
 {

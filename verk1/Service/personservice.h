@@ -3,8 +3,8 @@
 
 #include <algorithm>
 
-#include "person.h"
-#include "dataaccess.h"
+#include "Models/person.h"
+#include "DataAccess/dataaccess.h"
 
 using namespace std;
 

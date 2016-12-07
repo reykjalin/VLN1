@@ -3,7 +3,7 @@
 
 #include <QString>
 
-#include "person.h"
+#include "Models/person.h"
 
 class utils
 {

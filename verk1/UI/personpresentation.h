@@ -6,9 +6,9 @@
 #include <QTextStream>
 #include <QVector>
 
-#include "personservice.h"
-#include "person.h"
-#include "utils.h"
+#include "Service/personservice.h"
+#include "Models/person.h"
+#include "Utilities/utils.h"
 
 using namespace std;
 

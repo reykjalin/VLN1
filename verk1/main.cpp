@@ -2,7 +2,7 @@
 #include <QTimer>
 
 #include <iostream>
-#include "personpresentation.h"
+#include "UI/personpresentation.h"
 
 using namespace std;
 
