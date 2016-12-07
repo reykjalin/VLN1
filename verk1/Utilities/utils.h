@@ -24,6 +24,7 @@ class utils
          * @return string of the int passed in variable n
          */
         static QString itos(int n) { return QString::number(n); }
+        static QString uitos(unsigned int n) { return QString::number(n); }
 
         // These functions are comparators used by stable_sort to sort
         // the person list

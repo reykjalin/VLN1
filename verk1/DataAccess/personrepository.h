@@ -1,0 +1,30 @@
+#ifndef PERSONREPOSITORY_H
+#define PERSONREPOSITORY_H
+
+#include <QtSql>
+#include <QStringList>
+#include <QVector>
+#include <QString>
+
+#include "Models/person.h"
+
+class PersonRepository
+{
+    public:
+        PersonRepository() { }
+
+        QSqlError initRepo();
+
+        bool      addPerson(const Person  p);
+        QSqlError getPerson(uint id, Person &p);
+
+        QVector<Person> getAll();
+    private:
+        QSqlDatabase db;
+
+        QSqlError getIndexes(int &indexI, int &indexN, int &indexG,
+                             int &indexB, int &indexD, QSqlQuery q);
+
+};
+
+#endif // PERSONREPOSITORY_H

@@ -9,6 +9,7 @@ Person::Person() {
     gender = "";
     birthYear = -1;
     deathYear = -1;
+    id = -1;
 }
 
 QTextStream& operator <<(QTextStream &out, const Person &p) {

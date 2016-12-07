@@ -14,21 +14,24 @@ class Person
 {
     public:
         Person();
-        Person(QString n, QString g, int b = 0, int d = 0)
-            :  name(n), gender(g), birthYear(b), deathYear(d) { }
+        Person(QString n, QString g, int b = 0, int d = 0, unsigned int i = -1)
+            : name(n), gender(g), birthYear(b), deathYear(d), id(i) { }
         Person(const Person &copyMe)
             : name(copyMe.name), gender(copyMe.gender),
-              birthYear(copyMe.birthYear), deathYear(copyMe.deathYear) { }
+              birthYear(copyMe.birthYear), deathYear(copyMe.deathYear),
+              id(copyMe.id) { }
 
-        QString getName()   const { return name; }
-        QString getGender() const { return gender; }
-        int getBirthYear()  const { return birthYear; }
-        int getDeathYear()  const { return deathYear; }
+        QString getName()    const { return name; }
+        QString getGender()  const { return gender; }
+        int getBirthYear()   const { return birthYear; }
+        int getDeathYear()   const { return deathYear; }
+        unsigned int getId() const { return id; }
 
         void setName(QString n)   { name = n; }
         void setGender(QString g) { gender = g; }
-        void setBirthYear(int b) { birthYear = b; }
-        void setDeathYear(int d) { deathYear = d; }
+        void setBirthYear(int b)  { birthYear = b; }
+        void setDeathYear(int d)  { deathYear = d; }
+        void setId(uint i)        { id = i; }
 
         friend bool operator >(const Person &lhs, const Person &rhs);
         friend bool operator ==(const Person &lhs, const Person &rhs);
@@ -43,6 +46,7 @@ class Person
         QString gender;
         int birthYear;
         int deathYear;
+        unsigned int id;
 };
 
 #endif // PERSON_H

@@ -5,6 +5,7 @@
 
 #include "Models/person.h"
 #include "DataAccess/dataaccess.h"
+#include "DataAccess/personrepository.h"
 
 using namespace std;
 
@@ -17,7 +18,7 @@ class PersonService
          * @brief getPersonList - get list of Persons in database
          * @return List containing person information
          */
-        QVector<Person> getPersonList() { return db.getPersonList(); }
+        QVector<Person> getPersonList() { return db2.getAll(); }
         /**
          * @brief findSimilar - search through DB for something simalar to expr
          * @param expr Query to search for
@@ -34,14 +35,14 @@ class PersonService
          * @brief startService - start service; load information
          * @return true if successful, false otherwise
          */
-        bool startService() { return db.readDataFromDB(); }
+        bool startService() { return db.readDataFromDB() && !db2.initRepo().isValid(); }
 
         /**
          * @brief addPerson - Add person to DB
          * @param p Person to add
          * @return true if successful, false otherwise
          */
-        bool addPerson(Person p) { return db.addPerson(p); }
+        bool addPerson(Person p) { return db2.addPerson(p); }
         /**
          * @brief getPerson - Get person from DB
          * @param index Index of person to fetch
@@ -79,6 +80,7 @@ class PersonService
          * @brief db - Database connection
          */
         DataAccess db;
+        PersonRepository db2;
 };
 
 #endif // PERSONSERVICE_H

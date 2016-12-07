@@ -118,7 +118,7 @@ void PersonPresentation::printPersonList(QVector<Person> pList) {
     int longestGender = 5;  // length of string "other"
     int yearOfBirth   = 13; // length of string "year of birth"
     // get longest id
-    int longestId     = utils::itos(pList.length()).length();
+    int longestId     = utils::uitos(pList.length()).length();
     longestId = (longestId < 2 ? 2 : longestId);
 
     findLongestNameAndGender(longestName, longestGender, pList);
@@ -129,8 +129,8 @@ void PersonPresentation::printPersonList(QVector<Person> pList) {
     int i;
     for(i = 0; i < pList.length(); i++) {
         qout << "|";
-        printSpacing(longestId - utils::itos(i).length());
-        qout << " " + utils::itos(i) + " ";
+        printSpacing(longestId - utils::uitos(pList[i].getId()).length());
+        qout << " " + utils::uitos(pList[i].getId()) + " ";
 
         qout << "| " << pList[i].getName() << " ";
         printSpacing(longestName - pList[i].getName().length());
