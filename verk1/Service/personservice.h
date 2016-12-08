@@ -49,14 +49,14 @@ class PersonService
          * @param p Person object to store information
          * @return true if successful, false otherwise
          */
-        bool getPerson(unsigned int index, Person &p) { return db.getPerson(index, p); }
+        bool getPerson(unsigned int index, Person &p) { return !db2.getPerson(index, p).isValid(); }
         /**
          * @brief editPerson - Edit person in DB
          * @param index Index of person to edit
          * @param newInfo Person object containing new information
          * @return
          */
-        bool editPerson(unsigned int index, Person newInfo) { return db.editPerson(index, newInfo); }
+        QSqlError editPerson(Person newInfo) { return db2.editPerson(newInfo); }
 
         /**
          * @brief loadDataFromFile - Load file into DB

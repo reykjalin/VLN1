@@ -15,15 +15,16 @@ class PersonRepository
 
         QSqlError initRepo();
 
-        bool      addPerson(const Person  p);
-        QSqlError getPerson(uint id, Person &p);
+        bool      addPerson (const Person  p);
+        QSqlError getPerson (uint id, Person &p);
+        QSqlError editPerson(const Person newInfo);
 
         QVector<Person> getAll();
     private:
         QSqlDatabase db;
 
-        QSqlError getIndexes(int &indexI, int &indexN, int &indexG,
-                             int &indexB, int &indexD, QSqlQuery q);
+        void getIndexes(int &indexI, int &indexN, int &indexG,
+                        int &indexB, int &indexD, QSqlQuery q);
 
 };
 

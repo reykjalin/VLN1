@@ -33,7 +33,6 @@ class Person
         void setDeathYear(int d)  { deathYear = d; }
         void setId(uint i)        { id = i; }
 
-        friend bool operator >(const Person &lhs, const Person &rhs);
         friend bool operator ==(const Person &lhs, const Person &rhs);
         friend QTextStream& operator <<(QTextStream &out, const Person &p);
         friend QTextStream& operator >>(QTextStream &in, Person &p);

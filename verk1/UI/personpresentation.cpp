@@ -270,11 +270,16 @@ void PersonPresentation::editPerson() {
 
     Person toEdit;
     // Get person info
-    service.getPerson(id, toEdit);
-    // Edit info
-    editPerson(toEdit);
-    // Edit info in DB
-    service.editPerson(id, toEdit);
+    if(service.getPerson(id, toEdit)) {
+        // Edit info
+        editPerson(toEdit);
+        // Edit info in DB
+        QSqlError e = service.editPerson(toEdit);
+        if(e.isValid())
+            qout << "An error occured while editing information:" << endl
+                 << e.text() << endl;
+    }
+    qout << "Selected ID doesn't exist" << endl;
 }
 
 void PersonPresentation::printEditMenu(Person p) {
