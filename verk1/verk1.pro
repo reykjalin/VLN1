@@ -16,7 +16,8 @@ SOURCES += main.cpp \
     Service/personservice.cpp \
     Utilities/utils.cpp \
     DataAccess/personrepository.cpp \
-    Models/computer.cpp
+    Models/computer.cpp \
+    DataAccess/computerrepository.cpp
 
 HEADERS += \
     DataAccess/dataaccess.h \
@@ -25,6 +26,7 @@ HEADERS += \
     UI/personpresentation.h \
     Utilities/utils.h \
     DataAccess/personrepository.h \
-    Models/computer.h
+    Models/computer.h \
+    DataAccess/computerrepository.h
 
 QT += sql

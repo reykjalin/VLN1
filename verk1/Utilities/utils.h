@@ -2,6 +2,10 @@
 #define UTILS_H
 
 #include <QString>
+#include <QStringList>
+#include <QSqlDatabase>
+#include <QSqlError>
+#include <QSqlQuery>
 
 #include "Models/person.h"
 
@@ -32,6 +36,8 @@ class utils
         static bool sortGender(const Person &lhs, const Person &rhs);
         static bool sortBirth(const Person &lhs, const Person &rhs);
         static bool sortDeath(const Person &lhs, const Person &rhs);
+
+        static QSqlError initDB(QSqlDatabase &db);
 
         // ENUM for sort orders
         enum SORTS {

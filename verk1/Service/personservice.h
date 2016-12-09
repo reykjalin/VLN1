@@ -4,8 +4,10 @@
 #include <algorithm>
 
 #include "Models/person.h"
+#include "Models/computer.h"
 #include "DataAccess/dataaccess.h"
 #include "DataAccess/personrepository.h"
+#include "DataAccess/computerrepository.h"
 
 using namespace std;
 
@@ -19,6 +21,7 @@ class PersonService
          * @return List containing person information
          */
         QVector<Person> getPersonList() { return db2.getAll(); }
+        QVector<Computer> getComputerList() { return cRepo.getAll(); }
         /**
          * @brief findSimilar - search through DB for something simalar to expr
          * @param expr Query to search for
@@ -81,6 +84,7 @@ class PersonService
          */
         DataAccess db;
         PersonRepository db2;
+        ComputerRepository cRepo;
 };
 
 #endif // PERSONSERVICE_H

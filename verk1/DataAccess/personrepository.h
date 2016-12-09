@@ -7,6 +7,7 @@
 #include <QString>
 
 #include "Models/person.h"
+#include "Utilities/utils.h"
 
 class PersonRepository
 {

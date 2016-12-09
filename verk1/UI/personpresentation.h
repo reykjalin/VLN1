@@ -57,6 +57,11 @@ class PersonPresentation : public QObject
         // person information stored
         void printMenu();
 
+        // Functions to print the computer list
+        void printComputerList(QVector<Computer> cList);
+        void printComputerListHeader(int longestN, int longestT, int longestId);
+        void printComputerListSeperator(int longestN, int longestT, int longestId);
+
         // Functions to print the person list
         void printPersonList(QVector<Person> pList);
         void printListHeader(int longestN, int longestG, int longestId);
@@ -71,6 +76,7 @@ class PersonPresentation : public QObject
          * @param pList - List of current persons
          */
         void findLongestNameAndGender(int &longestN, int &longestG, QVector<Person> pList);
+        void findLongestNameAndType(int &longestN, int &longestT, QVector<Computer> cList);
 
 
         /**
@@ -120,6 +126,9 @@ class PersonPresentation : public QObject
             GETLIST = 1,
             ADDPERSON,
             EDITPERSON,
+            GETCOMPUTERLIST,
+            ADDCOMPUTER,
+            EDITCOMPUTER,
             SEARCH,
             ORDER,
             LOADFILE,

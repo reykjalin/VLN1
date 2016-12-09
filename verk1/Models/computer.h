@@ -23,9 +23,9 @@ class Computer
        void setBuilt(bool b)      { built = b; }
        void setId(uint i)         { id = i; }
 
-        friend bool operator ==(const Computer &lhs, const Computer &rhs);
-        friend QTextStream& operator <<(QTextStream &out, const Computer &c);
-        friend QTextStream& operator >>(QTextStream &in, Computer &c);
+       friend bool operator ==(const Computer &lhs, const Computer &rhs);
+       friend QTextStream& operator <<(QTextStream &out, const Computer &c);
+       friend QTextStream& operator >>(QTextStream &in, Computer &c);
 
     private:
         QString name;

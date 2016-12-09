@@ -12,6 +12,12 @@ PersonPresentation::PersonPresentation(QObject *parent)
     selectionDescriptions.insert(
                 EDITPERSON, "Edit information on individual in the list");
     selectionDescriptions.insert(
+                GETCOMPUTERLIST, "Get a list of computers");
+    selectionDescriptions.insert(
+                ADDCOMPUTER, "Add new computer");
+    selectionDescriptions.insert(
+                EDITCOMPUTER, "Edit information on computer in the list");
+    selectionDescriptions.insert(
                 SEARCH, "Search for famous individuals from the history of Computer Science");
     selectionDescriptions.insert(
                 ORDER, "Choose the order in which the list of individuals will appear");
@@ -84,6 +90,17 @@ void PersonPresentation::startPresentation() {
             printPersonList(service.getPersonList());
 
         }
+        else if(input == utils::itos(GETCOMPUTERLIST)) {
+            // DO STUFF
+            QVector<Computer> cList = service.getComputerList();
+            printComputerList(cList);
+        }
+        else if(input == utils::itos(ADDCOMPUTER)) {
+            // DO STUFF
+        }
+        else if(input == utils::itos(EDITCOMPUTER)) {
+            // DO STUFF
+        }
         else
             qout << "Invalid input." << endl;
     }
@@ -118,7 +135,7 @@ void PersonPresentation::printPersonList(QVector<Person> pList) {
     int longestGender = 5;  // length of string "other"
     int yearOfBirth   = 13; // length of string "year of birth"
     // get longest id
-    int longestId     = utils::uitos(pList.length()).length();
+    int longestId = utils::itos(pList.last().getId()).length();
     longestId = (longestId < 2 ? 2 : longestId);
 
     findLongestNameAndGender(longestName, longestGender, pList);
@@ -158,6 +175,53 @@ void PersonPresentation::printPersonList(QVector<Person> pList) {
     qout << endl;
 }
 
+void PersonPresentation::printComputerList(QVector<Computer> cList) {
+    int longestName  = 4;
+    int longestType  = 4;
+    int yearBuilt    = 10;
+    int longestBuilt = 6;
+    // get longest id
+    int longestId = utils::uitos(cList.last().getId()).length();
+    longestId = (longestId < 2 ? 2 : longestId);
+
+    findLongestNameAndType(longestName, longestType, cList);
+
+    qout << endl;
+    printSeperator(longestName, longestType, longestId);
+    printComputerListHeader(longestName, longestType, longestId);
+    int i;
+    for(i = 0; i < cList.length(); i++) {
+        qout << "|";
+        printSpacing(longestId - utils::uitos(cList[i].getId()).length());
+        qout << " " + utils::uitos(cList[i].getId()) + " ";
+
+        qout << "| " << cList[i].getName() << " ";
+        printSpacing(longestName - cList[i].getName().length());
+
+        qout << "| " << cList[i].getType() << " ";
+        printSpacing(longestType - cList[i].getType().length());
+
+        qout << "| ";
+        if(cList[i].getBuilt()) {
+            qout << "Yes";
+            printSpacing(longestBuilt - 3);
+        }
+        else {
+            qout << "No";
+            printSpacing(longestBuilt - 2);
+        }
+
+        qout << " |";
+        printSpacing(yearBuilt - utils::itos(cList[i].getYearBuilt()).length());
+        qout << " " << utils::uitos(cList[i].getYearBuilt()) << " ";
+
+        qout << "|" << endl;
+    }
+    if((i % 4) != 1 || i == 1)
+        printSeperator(longestName, longestType, longestId);
+    qout << endl;
+}
+
 void PersonPresentation::printListHeader(int longestN, int longestG, int longestId) {
     qout << "| ID ";
     printSpacing(longestId - 2);
@@ -167,6 +231,31 @@ void PersonPresentation::printListHeader(int longestN, int longestG, int longest
     printSpacing(longestG - 6);
     qout << "| Year of birth | Year of death |" << endl;
     printSeperator(longestN, longestG, longestId);
+}
+
+void PersonPresentation::printComputerListHeader(int longestN, int longestT, int longestId) {
+    qout << "| ID ";
+    printSpacing(longestId - 2);
+    qout << "| Name ";
+    printSpacing(longestN - 2);
+    qout << "| Type ";
+    printSpacing(longestT - 2);
+    qout << "| Built? | Year Built |" << endl;
+    printComputerListSeperator(longestN, longestT, longestId);
+}
+
+void PersonPresentation::printComputerListSeperator(int longestN, int longestT, int longestId) {
+    qout << "|";
+    printDashes(longestId + 2);
+    qout << "+";
+    printDashes(longestN + 2);
+    qout << "+";
+    printDashes(longestT + 2);
+    qout << "+";
+    printDashes(12);
+    qout << "+";
+    printDashes(7);
+    qout << "|" << endl;
 }
 
 void PersonPresentation::printSeperator(int longestN, int longestG, int longestId) {
@@ -197,6 +286,17 @@ Person PersonPresentation::createPerson() {
     Person p;
     qin >> p;
     return p;
+}
+
+void PersonPresentation::findLongestNameAndType(int &longestN, int &longestT,
+                                                QVector<Computer> cList)
+{
+    for(int i = 0; i < cList.length(); i++) {
+        if(cList[i].getName().length() > longestN)
+            longestN = cList[i].getName().length();
+        if(cList[i].getType().length() > longestT)
+            longestT = cList[i].getType().length();
+    }
 }
 
 void PersonPresentation::findLongestNameAndGender(int &longestN, int &longestG,
