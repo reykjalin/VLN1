@@ -105,18 +105,38 @@ class PersonPresentation : public QObject
         void editPerson();
         void printEditMenu(Person p);
 
+        Computer createComputer();
+
         // Change person object information
-        void editPerson(Person &p);
-        void changeName(Person &p);
-        void changeGender(Person &p);
+        void editPerson     (Person &p);
+        void changeName     (Person &p);
+        void changeGender   (Person &p);
         void changeBirthYear(Person &p);
         void changeDeathYear(Person &p);
+        void changeConns    (Person &p);
+
+
+        void editComputer();
+        void printEditComputerMenu(Computer c);
+
+        // Change computer object information
+        void editComputer   (Computer &c);
+        void changeName     (Computer &c);
+        void changeType     (Computer &c);
+        void changeYearBuilt(Computer &c);
+        void changeBuilt    (Computer &c);
+        void changeConns    (Computer &c);
 
         /**
          * @brief find - Allow the user to search in the DB
          * @return List of person objects found
          */
-        QVector<Person> find();
+        void find(QVector<Person> &pList, QVector<Computer> &cList);
+
+        void printComputerDetails(const Computer c);
+        void printPersonDetails  (const Person p);
+        uint selectPerson(QString editOrDetails);
+        uint selectComputer(QString editOrDetails);
 
         /**
          * @brief The SELECTIONS enum is used to assign numbers to different choices
@@ -131,6 +151,8 @@ class PersonPresentation : public QObject
             EDITCOMPUTER,
             SEARCH,
             ORDER,
+            GET_PERSON_INFO,
+            GET_COMP_INFO,
             LOADFILE,
             SIZE = LOADFILE + 1 // used to know the size of selectionDescription
         };

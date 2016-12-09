@@ -119,10 +119,10 @@ bool DataAccess::getPerson(unsigned int index, Person &p) {
 void DataAccess::sort() {
     // Make sure the list is ALWAYS sorted by name within each group
     switch(sortOrder) {
-        case utils::NAME:   sortName(); break;
-        case utils::GENDER: sortName(); sortGender(); break;
-        case utils::BIRTH:  sortName(); sortBirth();  break;
-        case utils::DEATH:  sortName(); sortDeath();  moveAliveToBack(); break;
+        case utils::NAMEASC:              sortName(); break;
+        case utils::GENDER_TYPE_ASC:      sortName(); sortGender(); break;
+        case utils::BIRTH_BUILDYEAR_ASC:  sortName(); sortBirth();  break;
+        case utils::DEATH_BUILT_ASC:      sortName(); sortDeath();  moveAliveToBack(); break;
         default:
             break;
     }

@@ -37,16 +37,31 @@ class utils
         static bool sortBirth(const Person &lhs, const Person &rhs);
         static bool sortDeath(const Person &lhs, const Person &rhs);
 
-        static QSqlError initDB(QSqlDatabase &db);
-
         // ENUM for sort orders
         enum SORTS {
-            NAME,
-            GENDER,
-            BIRTH,
-            DEATH
+            IDASC,
+            IDDESC,
+
+            NAMEDESC,
+            NAMEASC,
+
+            GENDER_TYPE_DESC,
+            GENDER_TYPE_ASC,
+
+            BIRTH_BUILDYEAR_DESC,
+            BIRTH_BUILDYEAR_ASC,
+
+            DEATH_BUILT_DESC,
+            DEATH_BUILT_ASC,
+
+            FIRSTSORT = IDASC,
+            LASTSORT = DEATH_BUILT_ASC
         };
 
+        static bool isValidSort(SORTS s) { return s >= FIRSTSORT && s <= LASTSORT; }
+
+        static bool isValidYear(uint year) { return year <= getCurrentYear(); }
+        static uint getCurrentYear() { return QDate::currentDate().year(); }
 };
 
 #endif // UTILS_H

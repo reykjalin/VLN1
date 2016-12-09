@@ -22,20 +22,20 @@ PersonPresentation::PersonPresentation(QObject *parent)
     selectionDescriptions.insert(
                 ORDER, "Choose the order in which the list of individuals will appear");
     selectionDescriptions.insert(
+                GET_PERSON_INFO, "Get detailed information about famous individiual");
+    selectionDescriptions.insert(
+                GET_COMP_INFO, "Get detailed information about a specific computer");
+    selectionDescriptions.insert(
                 LOADFILE, "Import data from external file");
 }
 
 void PersonPresentation::startPresentation() {
     // Skip loop and don't save data if isOK becomes false
     bool isOK = true;
-    if(!service.startService()) {
+    if(service.startService().isValid()) {
         qout << "Something went wrong when accessing saved data." << endl;
         isOK = false;
     }
-
-    // Only sort if everything is a-OK
-    if(isOK)
-        service.sort(); // Sort initial list
 
     while(isOK) {
         printMenu();
@@ -57,49 +57,80 @@ void PersonPresentation::startPresentation() {
             if(!service.addPerson(createPerson()))
                 qout << "This person is already registered in the database."
                      << endl;
-            service.sort(); // Sort after adding to list
 
         }
         else if(input == utils::itos(SEARCH)) {
 
-            QVector<Person> found = find();
-            if(found.length() == 0)
-                qout << "Nothing found." << endl;
-            else
-                printPersonList(found);
+            QVector<Person> pList;
+            QVector<Computer> cList;
+            find(pList, cList);
+            if(!pList.length())
+                qout << "No individuals found." << endl << endl;
+            else {
+                qout << "Individuals found:";
+                printPersonList(pList);
+            }
+
+            if(!cList.length())
+                qout << "No computers found." << endl;
+            else {
+                qout << "Computers found:";
+                printComputerList(cList);
+            }
 
         }
         else if(input == utils::itos(ORDER)) {
 
             sort();         // Configure sort
-            service.sort(); // Perform the actual sort
             printPersonList(service.getPersonList());
 
         }
         else if(input == utils::itos(LOADFILE)) {
 
             loadInfoFromFile();
-            service.sort();      // Sort new data
             printPersonList(service.getPersonList());
 
         }
         else if(input == utils::itos(EDITPERSON)) {
 
             editPerson();
-            service.sort();
             printPersonList(service.getPersonList());
 
         }
         else if(input == utils::itos(GETCOMPUTERLIST)) {
-            // DO STUFF
+
             QVector<Computer> cList = service.getComputerList();
             printComputerList(cList);
+
         }
         else if(input == utils::itos(ADDCOMPUTER)) {
-            // DO STUFF
+
+            qout << endl;
+            qin.read(1); // Remove extra newlines in buffer
+            QSqlError e = service.addComputer(createComputer());
+            if(e.isValid())
+                qout << "Something went wrong when registering new computer." << endl
+                     << e.text();
         }
         else if(input == utils::itos(EDITCOMPUTER)) {
-            // DO STUFF
+
+            editComputer();
+            printComputerList(service.getComputerList());
+
+        }
+        else if(input == utils::itos(GET_PERSON_INFO)) {
+            uint id = selectPerson("details on");
+            Person toGet;
+            toGet.setId(id);
+            service.getPerson(id, toGet);
+            printPersonDetails(toGet);
+        }
+        else if(input == utils::itos(GET_COMP_INFO)) {
+            uint id = selectComputer("details on");
+            Computer toGet;
+            toGet.setId(id);
+            service.getComputer(toGet);
+            printComputerDetails(toGet);
         }
         else
             qout << "Invalid input." << endl;
@@ -131,6 +162,12 @@ void PersonPresentation::printMenu() {
 }
 
 void PersonPresentation::printPersonList(QVector<Person> pList) {
+    qout << endl;
+    if(!pList.length()) {
+        qout << "No data" << endl << endl;
+        return;
+    }
+
     int longestName   = 4;  // length of string "Name"
     int longestGender = 5;  // length of string "other"
     int yearOfBirth   = 13; // length of string "year of birth"
@@ -140,7 +177,6 @@ void PersonPresentation::printPersonList(QVector<Person> pList) {
 
     findLongestNameAndGender(longestName, longestGender, pList);
 
-    qout << endl;
     printSeperator(longestName, longestGender, longestId);
     printListHeader(longestName, longestGender, longestId);
     int i;
@@ -176,6 +212,12 @@ void PersonPresentation::printPersonList(QVector<Person> pList) {
 }
 
 void PersonPresentation::printComputerList(QVector<Computer> cList) {
+    qout << endl;
+    if(!cList.length()) {
+        qout << "No data" << endl << endl;
+        return;
+    }
+
     int longestName  = 4;
     int longestType  = 4;
     int yearBuilt    = 10;
@@ -186,8 +228,7 @@ void PersonPresentation::printComputerList(QVector<Computer> cList) {
 
     findLongestNameAndType(longestName, longestType, cList);
 
-    qout << endl;
-    printSeperator(longestName, longestType, longestId);
+    printComputerListSeperator(longestName, longestType, longestId);
     printComputerListHeader(longestName, longestType, longestId);
     int i;
     for(i = 0; i < cList.length(); i++) {
@@ -212,13 +253,19 @@ void PersonPresentation::printComputerList(QVector<Computer> cList) {
         }
 
         qout << " |";
-        printSpacing(yearBuilt - utils::itos(cList[i].getYearBuilt()).length());
-        qout << " " << utils::uitos(cList[i].getYearBuilt()) << " ";
+        if(cList[i].getBuilt()) {
+            printSpacing(yearBuilt - utils::itos(cList[i].getYearBuilt()).length());
+            qout << " " << utils::uitos(cList[i].getYearBuilt()) << " ";
+        }
+        else {
+            printSpacing(yearBuilt - 3);
+            qout << " N/A ";
+        }
 
         qout << "|" << endl;
     }
     if((i % 4) != 1 || i == 1)
-        printSeperator(longestName, longestType, longestId);
+        printComputerListSeperator(longestName, longestType, longestId);
     qout << endl;
 }
 
@@ -237,9 +284,9 @@ void PersonPresentation::printComputerListHeader(int longestN, int longestT, int
     qout << "| ID ";
     printSpacing(longestId - 2);
     qout << "| Name ";
-    printSpacing(longestN - 2);
+    printSpacing(longestN - 4);
     qout << "| Type ";
-    printSpacing(longestT - 2);
+    printSpacing(longestT - 4);
     qout << "| Built? | Year Built |" << endl;
     printComputerListSeperator(longestN, longestT, longestId);
 }
@@ -252,9 +299,9 @@ void PersonPresentation::printComputerListSeperator(int longestN, int longestT, 
     qout << "+";
     printDashes(longestT + 2);
     qout << "+";
-    printDashes(12);
+    printDashes(8);
     qout << "+";
-    printDashes(7);
+    printDashes(12);
     qout << "|" << endl;
 }
 
@@ -288,6 +335,12 @@ Person PersonPresentation::createPerson() {
     return p;
 }
 
+Computer PersonPresentation::createComputer() {
+    Computer c;
+    qin >> c;
+    return c;
+}
+
 void PersonPresentation::findLongestNameAndType(int &longestN, int &longestT,
                                                 QVector<Computer> cList)
 {
@@ -310,7 +363,7 @@ void PersonPresentation::findLongestNameAndGender(int &longestN, int &longestG,
     }
 }
 
-QVector<Person> PersonPresentation::find() {
+void PersonPresentation::find(QVector<Person> &pList, QVector<Computer> &cList) {
     qout << endl;
     QString expression;
     qout << "Search for: ";
@@ -318,55 +371,111 @@ QVector<Person> PersonPresentation::find() {
 
     qin.read(1);            // Clear input buffer
     expression = qin.readLine();
+
     if(expression.toLower().contains("alive") ||
        expression.toLower().contains("still"))
     {
-        return service.findSimilar(expression) + service.findSimilar("-1");
+        QSqlError e = service.findSimilar(expression, pList, cList);
+        QSqlError e2 = service.findSimilar("-1", pList, cList);
+        if(e.isValid() || e2.isValid())
+            qout << "Something went wrong when searching" << endl
+                 << e.text() << endl
+                 << e2.text() << endl;
     }
-    return service.findSimilar(expression);
+    else if(expression.toLower().contains("no")) {
+        // 0 from database is changed to "No" in table representation
+        QSqlError e = service.findSimilar(expression, pList, cList);
+        QSqlError e2 = service.findSimilar("0", pList, cList);
+        if(e.isValid() || e2.isValid())
+            qout << "Something went wrong when searching" << endl
+                 << e.text() << endl
+                 << e2.text() << endl;
+    }
+    else if(expression.toLower().contains("yes")) {
+        // 1 from database is changed to "Yes" in table representation
+        QSqlError e = service.findSimilar(expression, pList, cList);
+        QSqlError e2 = service.findSimilar("1", pList, cList);
+        if(e.isValid() || e2.isValid())
+            qout << "Something went wrong when searching" << endl
+                 << e.text() << endl
+                 << e2.text() << endl;
+    }
+    else {
+        QSqlError e = service.findSimilar(expression, pList, cList);
+        if(e.isValid())
+            qout << "Something went wrong when searching" << endl
+                 << e.text() << endl;
+    }
 }
 
 void PersonPresentation::sort() {
     QString sort;
-    printSortMenu();
-    qin >> sort;
-    if(sort == utils::itos(utils::NAME))
-        service.setSort(utils::NAME);
-    else if(sort == utils::itos(utils::GENDER))
-        service.setSort(utils::GENDER);
-    else if(sort == utils::itos(utils::BIRTH))
-        service.setSort(utils::BIRTH);
-    else if(sort == utils::itos(utils::DEATH))
-        service.setSort(utils::DEATH);
+
+    bool success = false;
+    utils::SORTS s;
+    do {
+        printSortMenu();
+        qin >> sort;
+
+        s = static_cast<utils::SORTS>(utils::stoi(sort, success));
+
+        if(!utils::isValidSort(s) || !success)
+            qout << "Invalid choice, try again" << endl;
+
+    } while(!utils::isValidSort(s) || !success);
+
+    service.setSort(s);
     qout << endl;
 }
 
 void PersonPresentation::printSortMenu() {
     qout << endl;
-    qout << "[" + utils::itos(utils::NAME)   + "] Name"          << endl;
-    qout << "[" + utils::itos(utils::GENDER) + "] Gender"        << endl;
-    qout << "[" + utils::itos(utils::BIRTH)  + "] Year of birth" << endl;
-    qout << "[" + utils::itos(utils::DEATH)  + "] Year of death" << endl;
+    qout << "[" + utils::itos(utils::IDASC)                + "] ID ascending"      << endl;
+    qout << "[" + utils::itos(utils::IDDESC)               + "] ID descending"     << endl;
+    qout << "[" + utils::itos(utils::NAMEDESC)             + "] Name descending"   << endl;
+    qout << "[" + utils::itos(utils::NAMEASC)              + "] Name ascending"    << endl;
+
+    qout << "[" + utils::itos(utils::GENDER_TYPE_DESC)     +
+            "] Gender (individuals) / Type (computers) descending" << endl;
+    qout << "[" + utils::itos(utils::GENDER_TYPE_ASC)      +
+            "] Gender (individuals) / Type (computers) ascending"  << endl;
+    qout << "[" + utils::itos(utils::BIRTH_BUILDYEAR_DESC) +
+            "] Year of birth (individuals) / Year built (computers) descending"    << endl;
+    qout << "[" + utils::itos(utils::BIRTH_BUILDYEAR_ASC)  +
+            "] Year of birth (individuals) / Year built (computers) ascending"     << endl;
+    qout << "[" + utils::itos(utils::DEATH_BUILT_DESC)     +
+            "] Year of death (individuals) / Was it built? (computers) descending" << endl;
+    qout << "[" + utils::itos(utils::DEATH_BUILT_ASC)      +
+            "] Year of death (individuals) / Was it built? (computers) ascending"  << endl;
+
     qout << "Any other selection will bring you back to the main menu" << endl << endl;
     qout << "Sort by: ";
     qout.flush();
 }
 
+void PersonPresentation::editComputer() {
+    int id = selectComputer("to edit");
+
+    Computer toEdit;
+    toEdit.setId(id);
+
+    qout << toEdit.getId() << endl;
+    if(service.getComputer(toEdit).isValid()) {
+        qout << "Selected ID doesn't exist" << endl;
+        return;
+    }
+
+    editComputer(toEdit);
+
+    QSqlError e = service.editComputer(toEdit);
+    if(e.isValid()) {
+        qout << "An error occurred when updating DB" << endl;
+        return;
+    }
+}
+
 void PersonPresentation::editPerson() {
-    QVector<Person> pList = service.getPersonList();
-    printPersonList(pList);
-    QString inp;
-    int id;
-    bool success = false;
-    // Get valid selection
-    do {
-        qout << "Which individual would you like to edit? [enter ID]: ";
-        qout.flush();
-        qin >> inp;
-        id = utils::stoi(inp, success);
-        if(!success)
-            qout << "Invalid input" << endl;
-    } while(!success && id >= 0 && id < pList.length());
+    int id = selectPerson("to edit");
 
     Person toEdit;
     // Get person info
@@ -382,29 +491,131 @@ void PersonPresentation::editPerson() {
     qout << "Selected ID doesn't exist" << endl;
 }
 
-void PersonPresentation::printEditMenu(Person p) {
-        qout << endl;
-        qout << "Editing: " << endl;
-        qout << p << endl;
+void PersonPresentation::printEditComputerMenu(Computer c) {
+    qout << endl;
+    qout << "Editing: " << endl;
+    qout << c << endl;
 
-        qout << "Which do you want to change?" << endl;
-        qout << "1. Name"                      << endl;
-        qout << "2. Gender"                    << endl;
-        qout << "3. Year of birth"             << endl;
-        qout << "4. Year of death"             << endl;
-        qout << "5. Done, return to main menu" << endl << endl;
+    qout << "Which do you want to change?"    << endl;
+    qout << "1. Name"                         << endl;
+    qout << "2. Type"                         << endl;
+    qout << "3. Year built"                   << endl;
+    qout << "4. Add connection to individual" << endl;
+    qout << "5. Done, return to main menu"    << endl << endl;
 }
 
-void PersonPresentation::editPerson(Person &p) {
+void PersonPresentation::printEditMenu(Person p) {
+    qout << endl;
+    qout << "Editing: " << endl;
+    qout << p << endl;
+
+    qout << "Which do you want to change?"    << endl;
+    qout << "1. Name"                         << endl;
+    qout << "2. Gender"                       << endl;
+    qout << "3. Year of birth"                << endl;
+    qout << "4. Year of death"                << endl;
+    qout << "5. Add connection to a computer" << endl;
+    qout << "6. Done, return to main menu"    << endl << endl;
+}
+
+void PersonPresentation::editComputer(Computer &c) {
     QString sel; // initialized as ""
     while(sel != "5") {
-        printEditMenu(p);
+        printEditComputerMenu(c);
 
         do {
             qout << "Selection: ";
             qout.flush();
             qin >> sel;
         } while(sel != "1" && sel != "2" && sel != "3" && sel != "4" && sel != "5");
+
+        if(sel == "1")
+            changeName(c);
+        else if(sel == "2")
+            changeType(c);
+        else if(sel == "3")
+            changeYearBuilt(c);
+        else if(sel == "4")
+            changeConns(c);
+    }
+}
+
+void PersonPresentation::changeConns(Computer &c) {
+    QVector<Person> pList = service.getPersonList();
+    printPersonList(pList);
+    qout << "Which individual would you like to connect this computer to?" << endl;
+    bool success = false;
+    uint id;
+    do {
+        qout << "Selection: ";
+        qout.flush();
+        QString sel;
+        qin >> sel;
+        id = utils::stoi(sel, success);
+        if(id > pList.last().getId() || !success)
+            qout << "Invalid input, try again" << endl;
+    } while(id > pList.last().getId() || !success);
+
+    QVector<uint> newConns = c.getConns();
+    newConns.append(id);
+    c.setConns(newConns);
+}
+
+void PersonPresentation::changeName(Computer &c) {
+    qout << "New name: ";
+    qout.flush();
+    qin.read(1);
+    QString name = qin.readLine();
+    c.setName(name);
+}
+
+void PersonPresentation::changeType(Computer &c) {
+    qout << "New type: ";
+    qout.flush();
+    qin.read(1);
+    QString type = qin.readLine();
+    c.setType(type);
+}
+
+void PersonPresentation::changeYearBuilt(Computer &c) {
+    qout << "Was it built? [y/n]: ";
+    qout.flush();
+    QString inp;
+    do {
+        qin >> inp;
+        if(inp != "y" && inp != "n")
+            qout << "Invalid choice, try again" << endl;
+    } while(inp != "y" && inp != "n");
+
+    if(inp == "y") {
+        c.setBuilt(true);
+        uint year;
+        do {
+            qout << "Year built: ";
+            qout.flush();
+            qin >> year;
+            if(!utils::isValidYear(year))
+                qout << "Invalid year, try again" << endl;
+        } while(!utils::isValidYear(year));
+
+        c.setYearBuilt(year);
+    }
+    else {
+        c.setBuilt(false);
+        c.setYearBuilt(-1);
+    }
+}
+
+void PersonPresentation::editPerson(Person &p) {
+    QString sel; // initialized as ""
+    while(sel != "6") {
+        printEditMenu(p);
+
+        do {
+            qout << "Selection: ";
+            qout.flush();
+            qin >> sel;
+        } while(sel != "1" && sel != "2" && sel != "3" && sel != "4" && sel != "5" && sel != "6");
 
         if(sel == "1")
             changeName(p);
@@ -414,8 +625,32 @@ void PersonPresentation::editPerson(Person &p) {
             changeBirthYear(p);
         else if(sel == "4")
             changeDeathYear(p);
+        else if(sel == "5")
+            changeConns(p);
     }
 }
+
+void PersonPresentation::changeConns(Person &p) {
+    QVector<Computer> cList = service.getComputerList();
+    printComputerList(cList);
+    qout << "Which computer would you like to connect this individual to?" << endl;
+    bool success = false;
+    uint id;
+    do {
+        qout << "Selection: ";
+        qout.flush();
+        QString sel;
+        qin >> sel;
+        id = utils::stoi(sel, success);
+        if(id > cList.last().getId() || !success)
+            qout << "Invalid input, try again" << endl;
+    } while(id > cList.last().getId() || !success);
+
+    QVector<uint> newConns = p.getConns();
+    newConns.append(id);
+    p.setConns(newConns);
+}
+
 void PersonPresentation::changeName(Person &p) {
     qout << "New name: ";
     qout.flush();
@@ -477,4 +712,91 @@ void PersonPresentation::loadInfoFromFile() {
              << endl;
         return;
     }
+}
+
+uint PersonPresentation::selectPerson(QString editOrDetails) {
+    uint id;
+
+    QVector<Person> pList = service.getPersonList();
+    printPersonList(pList);
+    QString inp;
+    bool success = false;
+    // Get valid selection
+    do {
+        qout << "Which individual would you like " + editOrDetails + "? [enter ID]: ";
+        qout.flush();
+        qin >> inp;
+        id = utils::stoi(inp, success);
+        if(!success && id < static_cast<uint>(pList.length()))
+            qout << "Invalid input" << endl;
+    } while(!success && id < static_cast<uint>(pList.length()));
+
+    return id;
+}
+
+uint PersonPresentation::selectComputer(QString editOrDetails) {
+    uint id;
+
+    QVector<Computer> cList = service.getComputerList();
+    printComputerList(cList);
+    QString inp;
+    bool success = false;
+    // Get valid selection
+    do {
+        qout << "Which computer would you like " + editOrDetails + "? [enter ID]: ";
+        qout.flush();
+        qin >> inp;
+        id = utils::stoi(inp, success);
+        if(!success && id < static_cast<uint>(cList.length()))
+            qout << "Invalid input" << endl;
+    } while(!success && id < static_cast<uint>(cList.length()));
+
+    return id;
+}
+
+void PersonPresentation::printComputerDetails(const Computer c) {
+    qout << endl;
+    qout << "The " << c.getName() << " is a " << c.getType() << " computer";
+    if(c.getBuilt())
+        qout << " built in the year " << c.getYearBuilt() << "." << endl;
+    else
+        qout << " that hasn't been built yet." << endl;
+
+    if(c.getConns().length()) {
+        qout << "Scientists that have worked on the " << c.getName() << " include:" << endl;
+        for(int i = 0; i < c.getConns().length(); i++) {
+            Person p;
+            p.setId(c.getConns()[i]);
+            if(!service.getPerson(p.getId(), p)) {
+                qout << "Error occurred while getting individual info" << endl;
+                return;
+            }
+            qout << p.getName() << endl;
+        }
+    }
+}
+
+void PersonPresentation::printPersonDetails(const Person p) {
+    qout << endl;
+    qout << p.getName() << ", " << p.getGender() << ",";
+    qout << " was born in the year " << p.getBirthYear() << " and ";
+    if(p.getDeathYear() < 0)
+        qout << "is still alive to this day." << endl;
+    else
+        qout << "died in the year " << p.getDeathYear() << "." << endl;
+
+    if(p.getConns().length()) {
+        qout << "Computers " + p.getName() + " worked on include:" << endl;
+        for(int i = 0; i < p.getConns().length(); i++) {
+            Computer c;
+            c.setId(p.getConns()[i]);
+            if(service.getComputer(c).isValid()) {
+                qout << "Error occurred while getting computer info" << endl;
+                return;
+            }
+            qout << c.getName() << endl;
+        }
+    }
+    else
+        qout << p.getName() << " hasn't worked on any computers." << endl;
 }

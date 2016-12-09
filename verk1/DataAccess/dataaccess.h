@@ -12,7 +12,7 @@
 class DataAccess
 {
     public:
-        DataAccess() { fileName = "personDB.csv"; sortOrder = utils::NAME; }
+        DataAccess() { fileName = "personDB.csv"; sortOrder = utils::NAMEASC; }
         DataAccess(QString fn)
             : fileName(fn) { }
 
