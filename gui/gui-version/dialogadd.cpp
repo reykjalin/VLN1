@@ -12,3 +12,7 @@ DialogAdd::~DialogAdd()
 {
     delete ui;
 }
+
+void DialogAdd::on_buttonBox_clicked(QAbstractButton *button)
+{
+}

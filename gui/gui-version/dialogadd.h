@@ -2,6 +2,7 @@
 #define DIALOGADD_H
 
 #include <QDialog>
+#include <Service/personservice.h>
 
 namespace Ui {
     class DialogAdd;
@@ -15,8 +16,12 @@ class DialogAdd : public QDialog
         explicit DialogAdd(QWidget *parent = 0);
         ~DialogAdd();
 
+    private slots:
+        void on_buttonBox_clicked(QAbstractButton *button);
+
     private:
         Ui::DialogAdd *ui;
+        PersonService service;
 };
 
 #endif // DIALOGADD_H
