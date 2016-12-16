@@ -67,10 +67,11 @@ class PersonService
 
         /**
          * @brief loadDataFromFile - Load file into DB
+         * DEPRECATED: Has not been implemented for connections and computers, only scientists
          * @param fname File to load into DB
          * @return true if successful, false otherwise
          */
-        bool loadDataFromFile(QString fname) { return true; /* db.importFromFile(fname); */ }
+        //bool loadDataFromFile(QString fname) { return true; /* db.importFromFile(fname); */ }
 
         /**
          * @brief setSort - Set how sortOrder for sorting

@@ -4,6 +4,8 @@
 #include <QDialog>
 #include <QAbstractButton>
 #include <QPushButton>
+#include <QAbstractItemModel>
+#include <QStringListModel>
 
 #include "Service/personservice.h"
 
@@ -30,6 +32,14 @@ class DialogEdit : public QDialog
         void on_radioBuiltNo_clicked(bool checked);
 
         void on_radioBuiltYes_clicked(bool checked);
+
+        void on_btnAddSciConn_clicked();
+
+        void on_btnDelSciConn_clicked();
+
+        void on_btnAddConn_clicked();
+
+        void on_btnDelConn_clicked();
 
     private:
         Ui::DialogEdit *ui;

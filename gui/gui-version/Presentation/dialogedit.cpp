@@ -59,6 +59,7 @@ void DialogEdit::setData(const Person p) {
 }
 
 void DialogEdit::setData(const Computer c) {
+    // Update input elements
     ui->tabAdd->setCurrentIndex(1);
     ui->tabAdd->setTabEnabled(0, false);
 
@@ -69,7 +70,46 @@ void DialogEdit::setData(const Computer c) {
     if(c.getBuilt())
         ui->txtYearBuilt->setText(utils::itos(c.getYearBuilt()));
 
+    // Store id of computer being edited
     editId = c.getId();
+
+    // Prepare connection lists
+    QStringList notConn;
+    QStringList conn;
+
+    QVector<Person> pList = service.getPersonList();
+
+    // Remove connected scientists from list of all
+    for(int i = 0; i < c.getConns().size(); i++) {
+        for(int j = 0; j < pList.size(); j++) {
+            if(c.getConns()[i] == pList[j].getId()) {
+                pList.removeAt(j);
+                j--;
+            }
+        }
+    }
+
+    // Get connected scientists
+    for(int i = 0; i < c.getConns().size(); i++) {
+        Person p;
+        p.setId(c.getConns()[i]);
+        if(service.getPerson(p.getId(), p))
+            conn << p.getName();
+    }
+
+    // Get scientists that aren't connected
+    for(int i = 0; i < pList.size(); i++)
+        notConn << pList[i].getName();
+
+    // Update lists
+    QStringListModel *notConnModel = new QStringListModel(this);
+    QStringListModel *connModel    = new QStringListModel(this);
+
+    notConnModel->setStringList(notConn);
+    connModel->setStringList(conn);
+
+    ui->lstConnSci->setModel(connModel);
+    ui->lstNotConnSci->setModel(notConnModel);
 }
 
 void DialogEdit::on_buttonBox_clicked(QAbstractButton *button)
@@ -96,6 +136,19 @@ void DialogEdit::on_buttonBox_clicked(QAbstractButton *button)
     newInfo.setBirthYear(b);
     newInfo.setDeathYear(d);
     newInfo.setId(editId);
+
+    QVector<uint> newConns;
+    QAbstractItemModel *model = ui->lstConnComps->model();
+    for(int i = 0; i < model->rowCount(); i++) {
+        QString name = model->data(model->index(i, 0)).toString();
+        QVector<Person> pList;
+        QVector<Computer> cList;
+        service.findSimilar(name, pList, cList);
+        if(cList.size())
+            newConns.append(cList[0].getId());
+    }
+
+    newInfo.setConns(newConns);
 
     if(service.editPerson(newInfo).isValid()) {
         done(3);
@@ -129,6 +182,20 @@ void DialogEdit::on_btnBoxComputer_clicked(QAbstractButton *button)
     else
         newInfo.setYearBuilt(-1);
 
+    QVector<uint> newConns;
+    QAbstractItemModel *model = ui->lstConnSci->model();
+    for(int i = 0; i < model->rowCount(); i++) {
+        QString name = model->data(model->index(i, 0)).toString();
+        QVector<Person> pList;
+        QVector<Computer> cList;
+        service.findSimilar(name, pList, cList);
+
+        if(pList.size())
+            newConns.append(pList[0].getId());
+    }
+
+    newInfo.setConns(newConns);
+
     if(service.editComputer(newInfo).isValid()) {
         done(3);
         return;
@@ -149,4 +216,80 @@ void DialogEdit::on_radioBuiltYes_clicked(bool checked)
 {
     if(checked)
         ui->txtYearBuilt->setReadOnly(false);
+}
+
+void DialogEdit::on_btnAddSciConn_clicked()
+{
+    if(!ui->lstNotConnComps->selectionModel()->selectedIndexes().size())
+        return;
+
+    QAbstractItemModel *delModel = ui->lstNotConnComps->model();
+    QAbstractItemModel *addModel = ui->lstConnComps->model();
+
+    // Move between lists
+    int rows = addModel->rowCount();
+    addModel->insertRow(rows);
+    addModel->setData(addModel->index(rows, 0), ui->lstNotConnComps->selectionModel()->selectedIndexes()[0].data().toString());
+    delModel->removeRow(ui->lstNotConnComps->selectionModel()->selectedIndexes()[0].row());
+
+    // Update lists
+    ui->lstNotConnComps->setModel(delModel);
+    ui->lstConnComps->setModel(addModel);
+}
+
+void DialogEdit::on_btnDelSciConn_clicked()
+{
+    if(!ui->lstConnComps->selectionModel()->selectedIndexes().size())
+        return;
+
+    QAbstractItemModel *delModel = ui->lstConnComps->model();
+    QAbstractItemModel *addModel = ui->lstNotConnComps->model();
+
+    // Move between lists
+    int rows = addModel->rowCount();
+    addModel->insertRow(rows);
+    addModel->setData(addModel->index(rows, 0), ui->lstConnComps->selectionModel()->selectedIndexes()[0].data().toString());
+    delModel->removeRow(ui->lstConnComps->selectionModel()->selectedIndexes()[0].row());
+
+    // Update lists
+    ui->lstNotConnComps->setModel(addModel);
+    ui->lstConnComps->setModel(delModel);
+}
+
+void DialogEdit::on_btnAddConn_clicked()
+{
+    if(!ui->lstNotConnSci->selectionModel()->selectedIndexes().size())
+        return;
+
+    QAbstractItemModel *delModel = ui->lstNotConnSci->model();
+    QAbstractItemModel *addModel = ui->lstConnSci->model();
+
+    // Move between lists
+    int rows = addModel->rowCount();
+    addModel->insertRow(rows);
+    addModel->setData(addModel->index(rows, 0), ui->lstNotConnSci->selectionModel()->selectedIndexes()[0].data().toString());
+    delModel->removeRow(ui->lstNotConnSci->selectionModel()->selectedIndexes()[0].row());
+
+    // Update lists
+    ui->lstNotConnSci->setModel(delModel);
+    ui->lstConnSci->setModel(addModel);
+}
+
+void DialogEdit::on_btnDelConn_clicked()
+{
+    if(!ui->lstConnSci->selectionModel()->selectedIndexes().size())
+        return;
+
+    QAbstractItemModel *delModel = ui->lstConnSci->model();
+    QAbstractItemModel *addModel = ui->lstNotConnSci->model();
+
+    // Move between lists
+    int rows = addModel->rowCount();
+    addModel->insertRow(rows);
+    addModel->setData(addModel->index(rows, 0), ui->lstConnSci->selectionModel()->selectedIndexes()[0].data().toString());
+    delModel->removeRow(ui->lstConnSci->selectionModel()->selectedIndexes()[0].row());
+
+    // Update lists
+    ui->lstNotConnSci->setModel(addModel);
+    ui->lstConnSci->setModel(delModel);
 }

@@ -15,10 +15,10 @@
   </property>
   <widget class="QWidget" name="centralWidget">
    <layout class="QGridLayout" name="gridLayout_2">
-    <item row="1" column="0">
+    <item row="2" column="0">
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
-       <number>1</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="tabScientists">
        <attribute name="title">
@@ -44,6 +44,9 @@
             </property>
             <property name="text">
              <string>Search</string>
+            </property>
+            <property name="shortcut">
+             <string>Return</string>
             </property>
            </widget>
           </item>
@@ -132,6 +135,9 @@
             <property name="text">
              <string>Search</string>
             </property>
+            <property name="shortcut">
+             <string>Return</string>
+            </property>
            </widget>
           </item>
          </layout>
@@ -199,6 +205,83 @@
       </widget>
      </widget>
     </item>
+    <item row="0" column="0">
+     <layout class="QHBoxLayout" name="horizontalLayout_5">
+      <item>
+       <spacer name="horizontalSpacer_3">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item>
+       <widget class="QLabel" name="label">
+        <property name="text">
+         <string>Sort order:</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QComboBox" name="dropDownSort">
+        <property name="minimumSize">
+         <size>
+          <width>420</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="currentIndex">
+         <number>7</number>
+        </property>
+        <item>
+         <property name="text">
+          <string>Name ascending</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Name descending</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Gender (Scientist) / Type (Computer) ascending</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Gender (Scientist) / Type (Computer) descending</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Birth year (Scientist) / Year built (Computer) ascending</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Birth year (Scientist) / Year built (Computer) descending</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Death year (Scientist) / Has it been built? (Computer) ascending</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Death year (Scientist) / Has it been built? (Computer) descending</string>
+         </property>
+        </item>
+       </widget>
+      </item>
+     </layout>
+    </item>
    </layout>
   </widget>
   <widget class="QMenuBar" name="menuBar">
@@ -215,7 +298,6 @@
      <string>File</string>
     </property>
     <addaction name="actionAdd_2"/>
-    <addaction name="actionImport"/>
    </widget>
    <addaction name="menuFile"/>
   </widget>
@@ -231,6 +313,19 @@
   </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
+ <tabstops>
+  <tabstop>txtPrsnSrch</tabstop>
+  <tabstop>btnPrsnSrch</tabstop>
+  <tabstop>lstPrsn</tabstop>
+  <tabstop>btnEditScientist</tabstop>
+  <tabstop>txtCmpSrch</tabstop>
+  <tabstop>btnCmpSrch</tabstop>
+  <tabstop>lstCmp</tabstop>
+  <tabstop>btnEditComputer</tabstop>
+  <tabstop>tabWidget</tabstop>
+  <tabstop>txtScientistDetails</tabstop>
+  <tabstop>txtComputerDetails</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>

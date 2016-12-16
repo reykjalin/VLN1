@@ -33,6 +33,12 @@ QSqlError PersonRepository::editPerson(const Person newInfo) {
     if(!q.exec())
         return q.lastError();
 
+    q.prepare(QLatin1String("DELETE FROM scientists_and_computers WHERE scientist_id=(:sid)"));
+    q.bindValue(":sid", newInfo.getId());
+
+    if(!q.exec())
+        return q.lastError();
+
     for(int i = 0; i < newInfo.getConns().length(); i++) {
         q.prepare(QLatin1String("INSERT OR IGNORE INTO scientists_and_computers ") +
                   QLatin1String("(scientist_id, computer_id) VALUES ")             +
@@ -81,17 +87,17 @@ QVector<Person> PersonRepository::getAll() {
 
 string PersonRepository::getOrderBy() {
     switch(sortOrder) {
-        case utils::IDASC:                return "ORDER BY id ASC";          break;
-        case utils::IDDESC:               return "ORDER BY id DESC";         break;
-        case utils::NAMEASC:              return "ORDER BY name ASC";        break;
-        case utils::NAMEDESC:             return "ORDER BY name DESC";       break;
-        case utils::GENDER_TYPE_ASC:      return "ORDER BY gender ASC";      break;
-        case utils::GENDER_TYPE_DESC:     return "ORDER BY gender DESC";     break;
-        case utils::DEATH_BUILT_ASC:      return "ORDER BY death_year ASC";  break;
-        case utils::DEATH_BUILT_DESC:     return "ORDER BY death_year DESC"; break;
-        case utils::BIRTH_BUILDYEAR_ASC:  return "ORDER BY birth_year ASC";  break;
-        case utils::BIRTH_BUILDYEAR_DESC: return "ORDER BY birth_year DESC"; break;
-        default:                          return "";                         break;
+        case utils::IDASC:                return "ORDER BY id ASC";             break;
+        case utils::IDDESC:               return "ORDER BY id DESC";            break;
+        case utils::NAMEASC:              return "ORDER BY LOWER(name) ASC";    break;
+        case utils::NAMEDESC:             return "ORDER BY LOWER(name) DESC";   break;
+        case utils::GENDER_TYPE_ASC:      return "ORDER BY LOWER(gender) ASC";  break;
+        case utils::GENDER_TYPE_DESC:     return "ORDER BY LOWER(gender) DESC"; break;
+        case utils::DEATH_BUILT_ASC:      return "ORDER BY death_year ASC";     break;
+        case utils::DEATH_BUILT_DESC:     return "ORDER BY death_year DESC";    break;
+        case utils::BIRTH_BUILDYEAR_ASC:  return "ORDER BY birth_year ASC";     break;
+        case utils::BIRTH_BUILDYEAR_DESC: return "ORDER BY birth_year DESC";    break;
+        default:                          return "";                            break;
     }
 }
 
@@ -143,16 +149,19 @@ QSqlError PersonRepository::findSimilar(QString expr, QVector<Person> &pList) {
     expr.prepend("%");
     expr.append("%");
     q.prepare(QLatin1String("SELECT * FROM computer_scientists WHERE ") +
-              QLatin1String("id LIKE '%?%' OR ")                  +
-              QLatin1String("name LIKE (:expr2) OR ")                +
-              QLatin1String("gender LIKE (:expr3) OR ")              +
-              QLatin1String("birth_year LIKE (:expr4) OR ")          +
-              QLatin1String("death_year LIKE (:expr5)"));
+              QLatin1String("id LIKE '%?%' OR ")                        +
+              QLatin1String("name LIKE (:expr2) OR ")                   +
+              QLatin1String("gender LIKE (:expr3) OR ")                 +
+              QLatin1String("birth_year LIKE (:expr4) OR ")             +
+              QLatin1String("death_year LIKE (:expr5) ")                +
+              QLatin1String(getOrderBy().data()));
     q.bindValue(":expr1", expr);
     q.bindValue(":expr2", expr);
     q.bindValue(":expr3", expr);
     q.bindValue(":expr4", expr);
     q.bindValue(":expr5", expr);
+
+    qDebug() << getOrderBy().data() << endl;
 
     if(!q.exec())
         return q.lastError();

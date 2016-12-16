@@ -32,6 +32,12 @@ QSqlError ComputerRepository::editComputer(const Computer newInfo) {
     if(!q.exec())
         return q.lastError();
 
+    q.prepare(QLatin1String("DELETE FROM scientists_and_computers WHERE computer_id=(:cid)"));
+    q.bindValue(":cid", newInfo.getId());
+
+    if(!q.exec())
+        return q.lastError();
+
     for(int i = 0; i < newInfo.getConns().length(); i++) {
         q.prepare(QLatin1String("INSERT OR IGNORE INTO scientists_and_computers ") +
                   QLatin1String("(scientist_id, computer_id) VALUES ")             +
@@ -85,17 +91,17 @@ QVector<Computer> ComputerRepository::getAll() {
 
 string ComputerRepository::getOrderBy() {
     switch(sortOrder) {
-        case utils::IDASC:                return "ORDER BY id ASC";          break;
-        case utils::IDDESC:               return "ORDER BY id DESC";         break;
-        case utils::NAMEASC:              return "ORDER BY name ASC";        break;
-        case utils::NAMEDESC:             return "ORDER BY name DESC";       break;
-        case utils::GENDER_TYPE_ASC:      return "ORDER BY type ASC";        break;
-        case utils::GENDER_TYPE_DESC:     return "ORDER BY type DESC";       break;
-        case utils::DEATH_BUILT_ASC:      return "ORDER BY built ASC";       break;
-        case utils::DEATH_BUILT_DESC:     return "ORDER BY built DESC";      break;
-        case utils::BIRTH_BUILDYEAR_ASC:  return "ORDER BY year_built ASC";  break;
-        case utils::BIRTH_BUILDYEAR_DESC: return "ORDER BY year_built DESC"; break;
-        default:                          return "";                         break;
+        case utils::IDASC:                return "ORDER BY id ASC";           break;
+        case utils::IDDESC:               return "ORDER BY id DESC";          break;
+        case utils::NAMEASC:              return "ORDER BY LOWER(name) ASC";  break;
+        case utils::NAMEDESC:             return "ORDER BY LOWER(name) DESC"; break;
+        case utils::GENDER_TYPE_ASC:      return "ORDER BY LOWER(type) ASC";  break;
+        case utils::GENDER_TYPE_DESC:     return "ORDER BY LOWER(type) DESC"; break;
+        case utils::DEATH_BUILT_ASC:      return "ORDER BY built ASC";        break;
+        case utils::DEATH_BUILT_DESC:     return "ORDER BY built DESC";       break;
+        case utils::BIRTH_BUILDYEAR_ASC:  return "ORDER BY year_built ASC";   break;
+        case utils::BIRTH_BUILDYEAR_DESC: return "ORDER BY year_built DESC";  break;
+        default:                          return "";                          break;
     }
 }
 
@@ -104,11 +110,12 @@ QSqlError ComputerRepository::findSimilar(QString expr, QVector<Computer> &cList
     expr.prepend("%");
     expr.append("%");
     q.prepare(QLatin1String("SELECT * FROM computers WHERE ") +
-              QLatin1String("id LIKE '%?%' OR ")                  +
-              QLatin1String("name LIKE (:expr2) OR ")                +
-              QLatin1String("type LIKE (:expr3) OR ")              +
-              QLatin1String("year_built LIKE (:expr4) OR ")          +
-              QLatin1String("built LIKE (:expr5)"));
+              QLatin1String("id LIKE '%?%' OR ")              +
+              QLatin1String("name LIKE (:expr2) OR ")         +
+              QLatin1String("type LIKE (:expr3) OR ")         +
+              QLatin1String("year_built LIKE (:expr4) OR ")   +
+              QLatin1String("built LIKE (:expr5) ")           +
+              QLatin1String(getOrderBy().data()));
     q.bindValue(":expr1", expr);
     q.bindValue(":expr2", expr);
     q.bindValue(":expr3", expr);

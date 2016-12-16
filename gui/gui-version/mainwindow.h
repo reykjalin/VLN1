@@ -35,6 +35,8 @@ class MainWindow : public QMainWindow
 
         void on_btnEditComputer_clicked();
 
+        void on_dropDownSort_currentIndexChanged(int index);
+
     private:
         Ui::MainWindow *ui;
         PersonService service;

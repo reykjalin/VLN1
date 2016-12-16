@@ -10,6 +10,9 @@ MainWindow::MainWindow(QWidget *parent) :
         exit(1);
     }
 
+    ui->dropDownSort->setCurrentIndex(0);
+    service.setSort(utils::NAMEASC);
+
     QStringListModel *model = new QStringListModel(this);
     QStringList list;
     QVector<Person> pList = service.getPersonList();
@@ -173,4 +176,21 @@ void MainWindow::on_btnEditComputer_clicked()
 
     updateLists();
     ui->txtComputerDetails->clear();
+}
+
+void MainWindow::on_dropDownSort_currentIndexChanged(int index)
+{
+    switch(index) {
+        case 0:  service.setSort(utils::NAMEASC);              break;
+        case 1:  service.setSort(utils::NAMEDESC);             break;
+        case 2:  service.setSort(utils::GENDER_TYPE_ASC);      break;
+        case 3:  service.setSort(utils::GENDER_TYPE_DESC);     break;
+        case 4:  service.setSort(utils::BIRTH_BUILDYEAR_ASC);  break;
+        case 5:  service.setSort(utils::BIRTH_BUILDYEAR_DESC); break;
+        case 6:  service.setSort(utils::DEATH_BUILT_ASC);      break;
+        case 7:  service.setSort(utils::DEATH_BUILT_DESC);     break;
+        default: service.setSort(utils::IDASC);                break;
+    }
+
+    updateLists();
 }
