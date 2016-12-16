@@ -5,6 +5,8 @@
 #include <QStringListModel>
 
 #include "Service/personservice.h"
+#include "dialogadd.h"
+#include "dialogedit.h"
 
 namespace Ui {
     class MainWindow;
@@ -29,9 +31,18 @@ class MainWindow : public QMainWindow
 
         void on_lstCmp_clicked(const QModelIndex &index);
 
+        void on_btnEditScientist_clicked();
+
+        void on_btnEditComputer_clicked();
+
     private:
         Ui::MainWindow *ui;
         PersonService service;
+
+        Person getSelectedPerson(const QModelIndex &index);
+        Computer getSelectedComputer(const QModelIndex &index);
+
+        void updateLists();
 };
 
 #endif // MAINWINDOW_H

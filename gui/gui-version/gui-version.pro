@@ -21,9 +21,9 @@ SOURCES += main.cpp\
     Models/person.cpp \
     Service/personservice.cpp \
     Utilities/utils.cpp \
-    Presentation/guipresentation.cpp \
     DataAccess/db.cpp \
-    dialogadd.cpp
+    dialogadd.cpp \
+    Presentation/dialogedit.cpp
 
 HEADERS  += mainwindow.h \
     DataAccess/computerrepository.h \
@@ -33,11 +33,15 @@ HEADERS  += mainwindow.h \
     Models/person.h \
     Service/personservice.h \
     Utilities/utils.h \
-    Presentation/guipresentation.h \
     DataAccess/db.h \
-    dialogadd.h
+    dialogadd.h \
+    Presentation/dialogedit.h
 
 FORMS    += mainwindow.ui \
-    dialogadd.ui
+    dialogadd.ui \
+    Presentation/dialogedit.ui
 
 QT += sql
+
+
+INCLUDEPATH += Presentation

@@ -1,6 +1,10 @@
 #include "db.h"
 
 QSqlError DB::init() {
+    if(QSqlDatabase::contains("mainDB")) {
+        db = QSqlDatabase::database("mainDB");
+        return QSqlError();
+    }
     db = QSqlDatabase::addDatabase("QSQLITE");
     db.setDatabaseName("mainDB");
     if(!db.open())

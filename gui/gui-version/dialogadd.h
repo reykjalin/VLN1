@@ -2,7 +2,10 @@
 #define DIALOGADD_H
 
 #include <QDialog>
-#include <Service/personservice.h>
+#include <QAbstractButton>
+#include <QPushButton>
+
+#include "Service/personservice.h"
 
 namespace Ui {
     class DialogAdd;
@@ -18,6 +21,12 @@ class DialogAdd : public QDialog
 
     private slots:
         void on_buttonBox_clicked(QAbstractButton *button);
+
+        void on_radioBuiltYes_clicked(bool checked);
+
+        void on_radioBuiltNo_clicked(bool checked);
+
+        void on_btnBoxComputer_clicked(QAbstractButton *button);
 
     private:
         Ui::DialogAdd *ui;

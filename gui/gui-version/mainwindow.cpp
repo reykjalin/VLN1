@@ -1,6 +1,5 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-#include "dialogadd.h"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -39,7 +38,17 @@ MainWindow::~MainWindow()
 void MainWindow::on_actionAdd_2_triggered()
 {
     DialogAdd add;
-    add.exec();
+
+    // Return immediately if an error occurred
+    if(add.exec())
+        return;
+
+    updateLists();
+}
+
+void MainWindow::updateLists() {
+    on_btnPrsnSrch_clicked();
+    on_btnCmpSrch_clicked();
 }
 
 void MainWindow::on_btnPrsnSrch_clicked()
@@ -120,4 +129,48 @@ void MainWindow::on_lstCmp_clicked(const QModelIndex &index)
         }
         ui->txtComputerDetails->setPlainText(txt);
     }
+}
+
+void MainWindow::on_btnEditScientist_clicked()
+{
+    if(!ui->lstPrsn->selectionModel()->selectedIndexes().size())
+        return;
+    Person toEdit = getSelectedPerson(ui->lstPrsn->selectionModel()->selectedIndexes().at(0));
+    DialogEdit edit;
+    edit.setData(toEdit);
+    edit.exec();
+
+    updateLists();
+    ui->txtScientistDetails->clear();
+}
+
+Person MainWindow::getSelectedPerson(const QModelIndex &index) {
+    QVector<Person> pList;
+    QVector<Computer> cList;
+    service.findSimilar(index.data().toString(), pList, cList);
+    if(pList.size())
+        return pList[0];
+    return Person();
+}
+
+Computer MainWindow::getSelectedComputer(const QModelIndex &index) {
+    QVector<Person> pList;
+    QVector<Computer> cList;
+    service.findSimilar(index.data().toString(), pList, cList);
+    if(cList.size())
+        return cList[0];
+    return Computer();
+}
+
+void MainWindow::on_btnEditComputer_clicked()
+{
+    if(!ui->lstCmp->selectionModel()->selectedIndexes().size())
+        return;
+    Computer toEdit = getSelectedComputer(ui->lstCmp->selectionModel()->selectedIndexes().at(0));
+    DialogEdit edit;
+    edit.setData(toEdit);
+    edit.exec();
+
+    updateLists();
+    ui->txtComputerDetails->clear();
 }
